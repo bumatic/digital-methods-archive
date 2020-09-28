@@ -40,12 +40,11 @@ us at tarnold2@richmond.edu and ltilton@richmond.edu.
 ## Getting Started
 
 The easiest way to get started with the toolkit is to run the toolkit within
-Google's collaboratory environment. This is a free-to-use service that allows
+Google's colaboratory (Colab) environment. This is a free-to-use service that allows
 you to run Python code on a remote server with minimal setup. Simply select
-one of the two options below to get started:
+the link below to get started:
 
-- [Collaborary Notebook with Moving Images]()
-- [Collaborary Notebook with Still Images]()
+- [Colaborary Notebook Usage Example](https://colab.research.google.com/github/distant-viewing/library-congress-workshop/blob/master/notebooks/distant-viewing-toolkit-demo.ipynb)
 
 For more information about setting up the toolkit on your own machine, please
 see [INSTALL.md](INSTALL.md) and [USAGE.md](USAGE.md).
