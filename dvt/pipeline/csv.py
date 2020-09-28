@@ -17,6 +17,7 @@ from ..annotate.color import DominantColorAnnotator, ColorHistogramAnnotator
 from ..annotate.diff import DiffAnnotator
 from ..annotate.face import FaceAnnotator, FaceDetectMtcnn, FaceEmbedVgg2
 from ..annotate.obj import ObjectAnnotator, ObjectDetectRetinaNet
+from ..annotate.png import PngAnnotator
 from ..aggregate.audio import PowerToneAggregator
 from ..aggregate.cut import CutAggregator
 from ..aggregate.people import PeopleAggregator, make_fprint_from_images
@@ -37,6 +38,8 @@ class VideoCsvPipeline(Pipeline):
         dirout (str): output directory. If set to None (default), will be
             a directory named "dvt-output-data" in the current working
             directory
+        include_images (bool): should thumbnail images be produced; default
+            is False
         diff_cutoff (int): difference cutoff value; integer from 0-256; higher
             values produce fewer cuts.
         cut_min_length (int): minimum length of a detected cut in frames;
@@ -56,6 +59,7 @@ class VideoCsvPipeline(Pipeline):
         self,
         finput,
         dirout=None,
+        include_images=False,
         diff_cutoff=10,
         cut_min_length=30,
         frequency=0,
@@ -85,6 +89,7 @@ class VideoCsvPipeline(Pipeline):
         self.attrib = {
             "finput": _check_exists(finput),
             "fname": fname,
+            "include_images": include_images,
             "dirout": join(dirout, fname),
             "diff_cutoff": diff_cutoff,
             "cut_min_length": cut_min_length,
@@ -153,6 +158,13 @@ class VideoCsvPipeline(Pipeline):
             type=str,
             help="base directory in which to store the output",
             default="dvt-output-data",
+        )
+        parser.add_argument(
+            "--include-images",
+            "-i",
+            type=bool,
+            help="should thumbnails be produced from the selected frames?",
+            default=False,
         )
         parser.add_argument(
             "--diff-cutoff",
@@ -255,6 +267,15 @@ class VideoCsvPipeline(Pipeline):
         else:
             annotators.append(FaceAnnotator(
                 detector=FaceDetectMtcnn(), frames=frames
+            ))
+
+        if self.attrib['include_images']:
+            annotators.append(PngAnnotator(
+                output_dir=join(
+                    self.attrib['dirout'],
+                    "img",
+                ),
+                frames=frames
             ))
 
         self.dextra.run_annotators(
