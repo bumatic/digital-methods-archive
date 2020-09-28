@@ -44,7 +44,7 @@ Google's colaboratory (Colab) environment. This is a free-to-use service that al
 you to run Python code on a remote server with minimal setup. Simply select
 the link below to get started:
 
-- [Colaborary Notebook Usage Example](https://colab.research.google.com/github/distant-viewing/library-congress-workshop/blob/master/notebooks/distant-viewing-toolkit-demo.ipynb)
+- [Colaborary Notebook Usage Example](https://colab.research.google.com/github/distant-viewing/dvt/blob/master/notebooks/distant-viewing-toolkit-demo.ipynb)
 
 For more information about setting up the toolkit on your own machine, please
 see [INSTALL.md](INSTALL.md) and [USAGE.md](USAGE.md).
