@@ -1,8 +1,0 @@
-
-Abstract Classes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: dvt.core
-    :members: DataExtraction, VisualInput, FrameAnnotator, Aggregator, FrameBatch
-    :undoc-members:
-    :show-inheritance:
