@@ -43,9 +43,7 @@ class DVTOutput:
 
     def get_json(self, path=None, exclude_set=None, exclude_key=None):
         """Return or save json object."""
-        return _data_to_json(
-            self.get_dataframes(), path, exclude_set, exclude_key
-        )
+        return _data_to_json(self.get_dataframes(), path, exclude_set, exclude_key)
 
 
 def _add_meta(annotation, meta):

@@ -16,6 +16,14 @@ from .abstract import ImageAnnotator, BatchAnnotator
 from .annotate import SizeAnnotator, ImwriteAnnotator, AverageAnnotator
 from .aggregate import CutAggregator
 from .batch import DiffAnnotator
+from .keras import (
+    FaceAnnotator,
+    FaceDetectMtcnn,
+    FaceEmbedVgg2,
+    EmbedAnnotator,
+    EmbedImageKeras,
+    EmbedImageKerasResNet50,
+)
 from .output import DVTOutput
 from .video import VideoFrameInput, VideoBatchInput, FrameBatch
 

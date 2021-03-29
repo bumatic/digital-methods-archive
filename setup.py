@@ -28,7 +28,9 @@ extras = {
         "pytest-xdist",
         "pytest-cov",
         "codecov"
-    ]
+    ],
+    "keras": ["keras", "tensorflow", "mtcnn"],
+    "detectron2": ["detectron2", "torch", "torchvision", "torchaudio"],
 }
 
 setup(
