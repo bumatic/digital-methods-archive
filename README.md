@@ -3,23 +3,23 @@
 
 [![Build Status](https://travis-ci.org/distant-viewing/dvt.svg?branch=master)](https://travis-ci.org/distant-viewing/dvt)  [![codecov](https://codecov.io/gh/distant-viewing/dvt/branch/master/graph/badge.svg)](https://codecov.io/gh/distant-viewing/dvt)  [![License: GPL v2](https://img.shields.io/pypi/l/dvt?color=blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/dvt.svg)](https://pypi.python.org/pypi/dvt/) [![PyPI version shields.io](https://img.shields.io/pypi/v/dvt.svg)](https://pypi.python.org/pypi/dvt/) [![PyPI status shields.io](https://img.shields.io/pypi/status/dvt)](https://pypi.python.org/pypi/dvt/) [![DOI](https://joss.theoj.org/papers/10.21105/joss.01800/status.svg)](https://doi.org/10.21105/joss.01800)
 
-The Distant TV Toolkit is a Python package designed to facilitate the
-computational analysis of visual culture. It contains low-level architecture
-for applying state-of-the-art computer vision algorithms to still and moving
-images. The higher-level functionality of the toolkit allows users to quickly
-extract semantic metadata from digitized collections. Extracted information
-can be visualized for search and discovery as well as aggregated and analyzed
-to find patterns across a corpus.
+The Distant TV Toolkit consists of several Python packages designed to
+facilitate the computational analysis of visual culture. The easiest way to
+get started with the toolkit is to run the toolkit within Google's colaboratory
+(Colab) environment. This is a free-to-use service that allows you to run
+Python code on a remote server with minimal setup. Simply select the link below
+to get started:
 
-A quick guide for getting started is given below. More information about the
-toolkit and project is available on the following pages:
+- [Colaborary Notebook Usage Example]()
+
+For more information about setting up the toolkit on your own machine, please
+see [INSTALL.md](INSTALL.md). More information about the toolkit and project is
+available on the following pages:
 
 * Search and discovery interface example: [DVT Video Visualization](https://www.distantviewing.org/labs/)
 * Example analysis using aggregated metadata: ["Visual Style in Two Network Era Sitcoms"](https://culturalanalytics.org/article/11045-visual-style-in-two-network-era-sitcoms)
 * Theory of the project: ["Distant Viewing: Analyzing Large Visual Corpora."](https://www.distantviewing.org/pdf/distant-viewing.pdf)
-* Project homepage: [The Distant Viewing Lab](https://distantviewing.org)
 * Software Whitepaper: [A Python Package for the Analysis of Visual Culture](https://github.com/distant-viewing/dvt/blob/master/paper/paper.pdf)
-* [Documentation](https://distant-viewing.github.io/dvt/)
 * [PyPI repository](https://pypi.org/project/dvt/)
 
 If you have any trouble using the toolkit, please open a
@@ -36,18 +36,6 @@ us at tarnold2@richmond.edu and ltilton@richmond.edu.
 <br>
 
 ------------------
-
-## Getting Started
-
-The easiest way to get started with the toolkit is to run the toolkit within
-Google's colaboratory (Colab) environment. This is a free-to-use service that allows
-you to run Python code on a remote server with minimal setup. Simply select
-the link below to get started:
-
-- [Colaborary Notebook Usage Example](https://colab.research.google.com/github/distant-viewing/dvt/blob/master/notebooks/distant-viewing-toolkit-demo.ipynb)
-
-For more information about setting up the toolkit on your own machine, please
-see [INSTALL.md](INSTALL.md) and [USAGE.md](USAGE.md).
 
 ## Citation
 

@@ -10,17 +10,6 @@ extract semantic metadata from digitized collections. Extracted information
 can be visualized for search and discovery or aggregated and analyzed to find
 patterns across a corpus.
 
-More information about the toolkit and project is available on the following
-pages:
-
-- Search and discovery interface example: https://www.distantviewing.org/labs/
-- Example analysis using aggregated metadata: https://doi.org/10.22148/16.043
-- Theory of the project: https://www.distantviewing.org/pdf/distant-viewing.pdf
-- Project homepage: https://distantviewing.org
-- Software Whitepaper: https://github.com/distant-viewing/dvt/blob/master/paper/paper.pdf
-- Documentation: https://distant-viewing.github.io/dvt/
-- Source code: https://github.com/distant-viewing/dvt
-
 The Distant Viewing Toolkit is supported by the National Endowment for the
 Humanities through a Digital Humanities Advancement Grant. It is released under
 the open-source GNU General Public License (GPLv2+).
@@ -29,16 +18,7 @@ the open-source GNU General Public License (GPLv2+).
 required = [
     "numpy",
     "pandas",
-    "keras",
-    "tensorflow>==2.3.0",
-    "scipy",
-    "h5py",
-    "opencv-python",
-    "keras_retinanet",
-    "mtcnn",
-    "matplotlib",
-    "scipy",
-    "progress"
+    "opencv-python"
 ]
 
 extras = {
@@ -48,17 +28,16 @@ extras = {
         "pytest-xdist",
         "pytest-cov",
         "codecov"
-    ],
-    "optional": ["scikit-image"]
+    ]
 }
 
 setup(
     name="dvt",
-    version="0.3.4",
-    description="Cultural Analysis of Moving Images",
+    version="0.4.0",
+    description="Computational Analysis of Visual Culture",
     long_description=long_description,
     author="Taylor Anold, Lauren Tilton",
-    author_email="taylor.arnold@acm.org",
+    author_email="tbarnold@protonmail.ch",
     url="https://github.com/distant-viewing/dvt",
     license="GPL-2",
     install_requires=required,
@@ -70,12 +49,9 @@ setup(
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU Lesser General Public License v2 or "
         "later (LGPLv2+)",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Multimedia :: Video",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    package_data={
-          'dvt': ['data/build.zip'],
-     },
     packages=find_packages(),
 )

@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Aggregate frame level information to detect cuts.
-
-The aggregator functions here take local information about frames and estimates
-where cuts in the video occur.
+"""Aggregators.
 """
 
-from ..abstract import Aggregator
-from ..utils import _check_data_exists
+from pandas import DataFrame
 
 
-class CutAggregator(Aggregator):
+class CutAggregator:
     """Uses difference between successive frames to detect cuts.
 
     This aggregator uses information from the difference annotator to detect
@@ -31,42 +27,32 @@ class CutAggregator(Aggregator):
             output data.
     """
 
-    name = "cut"
-
     def __init__(self, **kwargs):
 
         self.ignore_vals = kwargs.get("ignore_vals", {})
         self.cut_vals = kwargs.get("cut_vals", None)
         self.min_len = kwargs.get("min_len", 1)
 
-        super().__init__(**kwargs)
-
-    def aggregate(self, ldframe, **kwargs):
+    def aggregate(self, diff):
         """Aggregate difference annotator.
 
         Args:
-            ldframe (dict): A dictionary of DictFrames from a FrameAnnotator.
-                Must contain an entry with the key 'diff', which is used in the
-                annotation.
+            diff (DataFrame): output of the difference annotator
 
         Returns:
             A dictionary frame giving the detected cuts.
         """
 
-        # make sure annotators have been run
-        _check_data_exists(ldframe, ["diff"])
-
         # grab the data, initialize counters, and create output `cuts`
-        ops = ldframe["diff"]
         ignore_this_frame = True
         current_cut_start = 0
-        cuts = {'frame_start': [], 'frame_end': []}
+        cuts = {"frame_start": [], "frame_end": []}
 
         # cycle through frames and collection shots; assumes that the data is
         # ordered by frame
-        mlen = len(ops["frame"])
+        mlen = len(diff["frame"])
         for ind in range(mlen):
-            this_frame = ops["frame"][ind]
+            this_frame = diff["frame"][ind]
 
             # check to see if we should ignore the next frame; by default we
             # ignore the phantom frame at the end of the video at time T+1.
@@ -75,7 +61,7 @@ class CutAggregator(Aggregator):
                 ignore_next_frame = True
             else:
                 for key, coff in self.ignore_vals.items():
-                    if ops[key][ind + 1] < coff:   # pragma: no cover
+                    if diff[key][ind + 1] < coff:  # pragma: no cover
                         ignore_next_frame = True
                         break
 
@@ -86,7 +72,7 @@ class CutAggregator(Aggregator):
             if long_flag and not ignore_next_frame:
                 cut_detect = True
                 for key, coff in self.cut_vals.items():
-                    if ops[key][ind] < coff:
+                    if diff[key][ind] < coff:
                         cut_detect = False
                         break
             else:
@@ -107,4 +93,4 @@ class CutAggregator(Aggregator):
             # push forward the ignore flag
             ignore_this_frame = ignore_next_frame
 
-        return cuts
+        return DataFrame(cuts)

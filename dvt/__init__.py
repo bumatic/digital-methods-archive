@@ -10,12 +10,13 @@ can be visualized for search and discovery or aggregated and analyzed to find
 patterns across a corpus.
 """
 
-from __future__ import absolute_import
+from cv2 import imread
 
-from . import abstract
-from . import aggregate
-from . import annotate
-from . import core
-from . import utils
+from .abstract import ImageAnnotator, BatchAnnotator
+from .annotate import SizeAnnotator, ImwriteAnnotator, AverageAnnotator
+from .aggregate import CutAggregator
+from .batch import DiffAnnotator
+from .output import DVTOutput
+from .video import VideoFrameInput, VideoBatchInput, FrameBatch
 
-__version__ = "0.3.3"
+__version__ = "0.4.0"
