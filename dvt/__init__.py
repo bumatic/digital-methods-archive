@@ -10,12 +10,13 @@ can be visualized for search and discovery or aggregated and analyzed to find
 patterns across a corpus.
 """
 
-from cv2 import imread
+from cv2 import imread, imwrite, imshow
 
 from .abstract import ImageAnnotator, BatchAnnotator
 from .annotate import SizeAnnotator, ImwriteAnnotator, AverageAnnotator
 from .aggregate import CutAggregator
 from .batch import DiffAnnotator
+from .detectron import InstanceAnnotator, KeypointsAnnotator, PanopticAnnotator
 from .keras import (
     FaceAnnotator,
     FaceDetectMtcnn,

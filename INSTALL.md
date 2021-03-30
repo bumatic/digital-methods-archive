@@ -74,7 +74,11 @@ python -m pip install torch torchvision torchaudio
 
 python -m pip install -U 'git+https://github.com/facebookresearch/fvcore'
 CC=clang CXX=clang++ ARCHFLAGS="-arch x86_64" python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
+python -m pip install --upgrade --force-reinstall numpy
 ```
+
+The last line gives an error about incompatibility with TensorFlow
+(numpy=1.20.2), but it still seems to run fine.
 
 Please feel free to open an issue if you have trouble with the installation,
 but it is likely we will not be able to offer significant assistance as this

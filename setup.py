@@ -5,10 +5,8 @@ long_description= """
 The Distant TV Toolkit is a Python package designed to facilitate the
 computational analysis of visual culture. It contains low-level architecture
 for applying state-of-the-art computer vision algorithms to still and moving
-images. The higher-level functionality of the toolkit allows users to quickly
-extract semantic metadata from digitized collections. Extracted information
-can be visualized for search and discovery or aggregated and analyzed to find
-patterns across a corpus.
+images. Extracted information can be visualized for search and discovery or
+aggregated and analyzed to find patterns across a corpus.
 
 The Distant Viewing Toolkit is supported by the National Endowment for the
 Humanities through a Digital Humanities Advancement Grant. It is released under
@@ -49,8 +47,7 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU Lesser General Public License v2 or "
-        "later (LGPLv2+)",
+        "License :: OSI Approved :: GNU General Public License V2 (GPLV2)",
         "Programming Language :: Python :: 3.8",
         "Topic :: Multimedia :: Video",
         "Topic :: Software Development :: Libraries :: Python Modules",

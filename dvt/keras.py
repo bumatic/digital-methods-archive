@@ -6,7 +6,7 @@ from importlib import import_module
 
 import ssl
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
-from numpy import float32, expand_dims, uint8, zeros
+from numpy import float32, expand_dims, uint8
 
 from .abstract import ImageAnnotator
 
