@@ -31,7 +31,7 @@ class VideoFrameInput:
         """
         self.input_path = _expand_path(input_path)[0]
         self.meta = None
-        self.fcount = 0
+        self.fcount = -1
         self.finished = False
         self._video_cap = None
         self.reset()
@@ -40,7 +40,7 @@ class VideoFrameInput:
 
     def reset(self):
         """Open connection to the video file."""
-        self.fcount = 0
+        self.fcount = -1
         self.finished = False
 
         self._video_cap = VideoCapture(self.input_path)
@@ -55,7 +55,7 @@ class VideoFrameInput:
         # get the next frame and return
         self.fcount = self.fcount + 1
         _, frame = self._video_cap.read()
-        self.finished = (self._ftotal == self.fcount)
+        self.finished = self._ftotal == (self.fcount + 1)
         return frame
 
     def get_metadata(self):

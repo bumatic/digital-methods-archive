@@ -19,7 +19,7 @@ class InstanceAnnotator(ImageAnnotator):
         """Annotate the batch of frames with the face annotator."""
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
-        if not instances:
+        if not len(instances):
             return None
 
         boxes = instances.get("pred_boxes").tensor.cpu().numpy()
@@ -52,7 +52,9 @@ class InstanceAnnotator(ImageAnnotator):
         from detectron2.utils.visualizer import Visualizer
 
         viz = Visualizer(img[:, :, ::-1], self.mdata)
-        out = viz.draw_instance_predictions(self.predictions["instances"].to("cpu"))
+        out = viz.draw_instance_predictions(
+            self.predictions["instances"].to("cpu")
+        )
         return out.get_image()[:, :, ::-1]
 
 
@@ -75,7 +77,7 @@ class KeypointsAnnotator(ImageAnnotator):
         ]
 
         keypoints = instances.get("pred_keypoints").cpu().numpy()
-        if not keypoints:
+        if not len(keypoints):
             return None
 
         keypoints = vstack([x for x in keypoints])
@@ -99,7 +101,9 @@ class KeypointsAnnotator(ImageAnnotator):
         from detectron2.utils.visualizer import Visualizer
 
         viz = Visualizer(img[:, :, ::-1], self.mdata)
-        keypoints = self.predictions["instances"].get("pred_keypoints").to("cpu")
+        keypoints = (
+            self.predictions["instances"].get("pred_keypoints").to("cpu")
+        )
 
         if not len(keypoints):
             return img
@@ -121,7 +125,7 @@ class PanopticAnnotator(ImageAnnotator):
         """Annotate the batch of frames with the face annotator."""
         self.predictions = self.predictor(img)
         panseg = self.predictions["panoptic_seg"]
-        if not panseg:
+        if not len(panseg):
             return None
 
         is_thing = [x.get("isthing") for x in panseg[1]]

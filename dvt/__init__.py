@@ -23,7 +23,7 @@ from .keras import (
     FaceEmbedVgg2,
     EmbedAnnotator,
     EmbedImageKeras,
-    EmbedImageKerasResNet50
+    EmbedImageKerasResNet50,
 )
 from .output import DVTOutput
 from .video import VideoFrameInput, VideoBatchInput, FrameBatch

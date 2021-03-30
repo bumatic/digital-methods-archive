@@ -69,7 +69,13 @@ class FaceDetectMtcnn:
         if not dets:
             return
 
-        faces = {"top": [], "right": [], "bottom": [], "left": [], "confidence": []}
+        faces = {
+            "top": [],
+            "right": [],
+            "bottom": [],
+            "left": [],
+            "confidence": [],
+        }
         for det in dets:
             if det["confidence"] >= self.cutoff:
                 bbox = _trim_bbox(
@@ -180,7 +186,9 @@ class EmbedImageKeras:
         from keras.models import Model
 
         if outlayer is not None:
-            model = Model(inputs=model.input, outputs=model.get_layer(outlayer).output)
+            model = Model(
+                inputs=model.input, outputs=model.get_layer(outlayer).output
+            )
 
         self.input_shape = (model.input_shape[1], model.input_shape[2])
         self.model = model

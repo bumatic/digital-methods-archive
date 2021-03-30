@@ -39,7 +39,9 @@ def _data_to_json(dframe, path=None, exclude_set=None, exclude_key=None):
     for key, value in dframe.items():
         if value.shape[0] != 0 and key not in exclude_set:
             drop_these = set(exclude_key).intersection(set(value.columns))
-            output[key] = loads(value.drop(drop_these).to_json(orient="records"))
+            output[key] = loads(
+                value.drop(drop_these).to_json(orient="records")
+            )
 
     if not path:  # pragma: no cover
         return output
