@@ -58,6 +58,110 @@ class InstanceAnnotator(ImageAnnotator):
         return out.get_image()[:, :, ::-1]
 
 
+class LVISAnnotator(ImageAnnotator):
+    """Annotator for performing Large Vocabulary Instance Segmentation."""
+
+    def __init__(
+        self, model_name="mask_rcnn_X_101_32x8d_FPN_1x", device="cpu"
+    ):
+        mname = "LVISv0.5-InstanceSegmentation/" + model_name + ".yaml"
+        self.predictor, self.mdata = _load_detectron_model(mname, device)
+        self.predictions = None
+
+    def annotate_image(self, img):
+        """Annotate the batch of frames with the face annotator."""
+        self.predictions = self.predictor(img)
+        instances = self.predictions["instances"]
+        if not len(instances):
+            return None
+
+        boxes = instances.get("pred_boxes").tensor.cpu().numpy()
+        cls = [
+            self.mdata.thing_classes[x]
+            for x in instances.get("pred_classes").cpu().numpy()
+        ]
+        scores = instances.get("scores").cpu().numpy()
+
+        output = {
+            "index": list(range(len(cls))),
+            "height": img.shape[0],
+            "width": img.shape[1],
+            "class": cls,
+            "prob": scores,
+            "x0": boxes[:, 0],
+            "y0": boxes[:, 1],
+            "x1": boxes[:, 2],
+            "y1": boxes[:, 3],
+        }
+
+        return {"instance": output}
+
+    def get_last_predictions(self):
+        """Get last predictions as a Detectron classed object."""
+        return self.predictions
+
+    def visualize_last_predictions(self, img):
+        """Return annotated image"""
+        from detectron2.utils.visualizer import Visualizer
+
+        viz = Visualizer(img[:, :, ::-1], self.mdata)
+        out = viz.draw_instance_predictions(
+            self.predictions["instances"].to("cpu")
+        )
+        return out.get_image()[:, :, ::-1]
+
+
+class CityscapesAnnotator(ImageAnnotator):
+    """Annotator for performing Large Vocabulary Instance Segmentation."""
+
+    def __init__(self, model_name="mask_rcnn_R_50_FPN", device="cpu"):
+        mname = "Cityscapes/" + model_name + ".yaml"
+        self.predictor, self.mdata = _load_detectron_model(mname, device)
+        self.predictions = None
+
+    def annotate_image(self, img):
+        """Annotate the batch of frames with the face annotator."""
+        self.predictions = self.predictor(img)
+        instances = self.predictions["instances"]
+        if not len(instances):
+            return None
+
+        boxes = instances.get("pred_boxes").tensor.cpu().numpy()
+        cls = [
+            self.mdata.thing_classes[x]
+            for x in instances.get("pred_classes").cpu().numpy()
+        ]
+        scores = instances.get("scores").cpu().numpy()
+
+        output = {
+            "index": list(range(len(cls))),
+            "height": img.shape[0],
+            "width": img.shape[1],
+            "class": cls,
+            "prob": scores,
+            "x0": boxes[:, 0],
+            "y0": boxes[:, 1],
+            "x1": boxes[:, 2],
+            "y1": boxes[:, 3],
+        }
+
+        return {"instance": output}
+
+    def get_last_predictions(self):
+        """Get last predictions as a Detectron classed object."""
+        return self.predictions
+
+    def visualize_last_predictions(self, img):
+        """Return annotated image"""
+        from detectron2.utils.visualizer import Visualizer
+
+        viz = Visualizer(img[:, :, ::-1], self.mdata)
+        out = viz.draw_instance_predictions(
+            self.predictions["instances"].to("cpu")
+        )
+        return out.get_image()[:, :, ::-1]
+
+
 class KeypointsAnnotator(ImageAnnotator):
     """Annotator for detecting human body keypoints."""
 

@@ -16,7 +16,13 @@ from .abstract import ImageAnnotator, BatchAnnotator
 from .annotate import SizeAnnotator, ImwriteAnnotator, AverageAnnotator
 from .aggregate import CutAggregator
 from .batch import DiffAnnotator
-from .detectron import InstanceAnnotator, KeypointsAnnotator, PanopticAnnotator
+from .detectron import (
+    InstanceAnnotator,
+    LVISAnnotator,
+    CityscapesAnnotator,
+    KeypointsAnnotator,
+    PanopticAnnotator,
+)
 from .keras import (
     FaceAnnotator,
     FaceDetectMtcnn,
