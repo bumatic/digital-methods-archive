@@ -19,6 +19,8 @@ class InstanceAnnotator(ImageAnnotator):
         """Annotate the batch of frames with the face annotator."""
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
+        if not instances:
+            return None
 
         boxes = instances.get("pred_boxes").tensor.cpu().numpy()
         cls = [
@@ -73,6 +75,9 @@ class KeypointsAnnotator(ImageAnnotator):
         ]
 
         keypoints = instances.get("pred_keypoints").cpu().numpy()
+        if not keypoints:
+            return None
+
         keypoints = vstack([x for x in keypoints])
 
         output = {
@@ -95,8 +100,12 @@ class KeypointsAnnotator(ImageAnnotator):
 
         viz = Visualizer(img[:, :, ::-1], self.mdata)
         keypoints = self.predictions["instances"].get("pred_keypoints").to("cpu")
+
+        if not len(keypoints):
+            return img
         for keyp in keypoints:
             out = viz.draw_and_connect_keypoints(keyp)
+
         return out.get_image()[:, :, ::-1]
 
 
@@ -112,6 +121,8 @@ class PanopticAnnotator(ImageAnnotator):
         """Annotate the batch of frames with the face annotator."""
         self.predictions = self.predictor(img)
         panseg = self.predictions["panoptic_seg"]
+        if not panseg:
+            return None
 
         is_thing = [x.get("isthing") for x in panseg[1]]
         score = [x.get("score", 0) for x in panseg[1]]

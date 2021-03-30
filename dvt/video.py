@@ -44,6 +44,7 @@ class VideoFrameInput:
         self.finished = False
 
         self._video_cap = VideoCapture(self.input_path)
+        self._ftotal = int(self._video_cap.get(CAP_PROP_FRAME_COUNT))
         self.meta = self._metadata()
 
     def next_frame(self):
@@ -53,8 +54,8 @@ class VideoFrameInput:
 
         # get the next frame and return
         self.fcount = self.fcount + 1
-        not_finished, frame = self._video_cap.read()
-        self.finished = not not_finished
+        _, frame = self._video_cap.read()
+        self.finished = (self._ftotal == self.fcount)
         return frame
 
     def get_metadata(self):

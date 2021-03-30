@@ -16,7 +16,6 @@ class DiffAnnotator(BatchAnnotator):
         self.quantiles = kwargs.get("quantiles", [])
         self.size = kwargs.get("size", 32)
         self.bins = kwargs.get("bins", 16)
-        super().__init__(**kwargs)
 
     def annotate_batch(self, batch):
         """Annotate the batch of frames with the difference annotator.
