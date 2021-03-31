@@ -10,7 +10,7 @@ aggregated and analyzed to find patterns across a corpus.
 
 The Distant Viewing Toolkit is supported by the National Endowment for the
 Humanities through a Digital Humanities Advancement Grant. It is released under
-the open-source GNU General Public License (GPLv2+).
+the open-source GNU General Public License (GPLv2).
 """
 
 required = [
@@ -47,7 +47,7 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License V2 (GPLV2)",
+        "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
         "Programming Language :: Python :: 3.8",
         "Topic :: Multimedia :: Video",
         "Topic :: Software Development :: Libraries :: Python Modules",
