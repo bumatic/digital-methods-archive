@@ -10,8 +10,7 @@ get started with the toolkit is to run the toolkit within Google's colaboratory
 Python code on a remote server with minimal setup. Simply select one of the
 links below to get started:
 
-- [COLAB NOTEBOOK DEMO (with Keras)]()
-- [COLAB NOTEBOOK DEMO (with Detectron2)]()
+- [COLAB NOTEBOOK DEMO](https://colab.research.google.com/drive/1KxYziaozONxMZH8uUaf4PxbW6DyNiZ0k?usp=sharing)
 
 For more information about setting up the toolkit on your own machine, please
 see [INSTALL.md](INSTALL.md). More information about the toolkit and project is
