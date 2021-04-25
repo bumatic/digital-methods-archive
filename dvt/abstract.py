@@ -51,22 +51,21 @@ def _process_output_values(output_vals):
     for key, value in output_vals.items():
         if isinstance(value, DataFrame):
             output[key] = [value]
-
-        if isinstance(value, list):
+        elif isinstance(value, list):
             output[key] = [value]
+        else:
+            assert isinstance(value, dict)
 
-        assert isinstance(value, dict)
+            # convert numpy array into a list of arrays for pandas
+            for skey in value.keys():
+                if isinstance(value[skey], ndarray) and len(value[skey].shape) > 1:
+                    value[skey] = [x for x in value[skey]]
 
-        # convert numpy array into a list of arrays for pandas
-        for skey in value.keys():
-            if isinstance(value[skey], ndarray) and len(value[skey].shape) > 1:
-                value[skey] = [x for x in value[skey]]
+            try:
+                dframe = DataFrame(value)
+            except ValueError as _:
+                dframe = DataFrame(value, index=[0])
 
-        try:
-            dframe = DataFrame(value)
-        except ValueError as _:
-            dframe = DataFrame(value, index=[0])
-
-        output[key] = dframe
+            output[key] = dframe
 
     return output

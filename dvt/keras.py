@@ -7,6 +7,7 @@ from importlib import import_module
 import ssl
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 from numpy import float32, expand_dims, uint8
+from pandas import DataFrame
 
 from .abstract import ImageAnnotator
 
@@ -36,6 +37,11 @@ class FaceAnnotator(ImageAnnotator):
                     left=f_faces["left"][i],
                 )
                 f_faces["embed"] += [embed]
+
+        if not f_faces:
+            f_faces = DataFrame(
+                columns = ["top", "right", "bottom", "left", "confidence"]
+            )
 
         return {"face": f_faces}
 
