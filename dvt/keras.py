@@ -23,8 +23,9 @@ class FaceAnnotator(ImageAnnotator):
 
         img_rgb = cvtColor(img, COLOR_BGR2RGB)
         f_faces = self.detector.detect(img_rgb)
-        n_face = len(f_faces["top"])
-        if self.embedding is not None and n_face > 0:
+
+        if self.embedding is not None and f_faces is not None:
+            n_face = len(f_faces["top"])
             f_faces["embed"] = []
             for i in range(n_face):
                 embed = self.embedding.embed(

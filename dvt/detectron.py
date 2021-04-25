@@ -69,7 +69,7 @@ class LVISAnnotator(ImageAnnotator):
         self.predictions = None
 
     def annotate_image(self, img):
-        """Annotate the batch of frames with the face annotator."""
+        """Annotate the batch of frames with the annotator."""
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
         if not len(instances):
@@ -94,7 +94,7 @@ class LVISAnnotator(ImageAnnotator):
             "y1": boxes[:, 3],
         }
 
-        return {"instance": output}
+        return {"lvis": output}
 
     def get_last_predictions(self):
         """Get last predictions as a Detectron classed object."""
@@ -112,7 +112,7 @@ class LVISAnnotator(ImageAnnotator):
 
 
 class CityscapesAnnotator(ImageAnnotator):
-    """Annotator for performing Large Vocabulary Instance Segmentation."""
+    """Annotator for performing Cityscape Instance Segmentation."""
 
     def __init__(self, model_name="mask_rcnn_R_50_FPN", device="cpu"):
         mname = "Cityscapes/" + model_name + ".yaml"
@@ -120,7 +120,7 @@ class CityscapesAnnotator(ImageAnnotator):
         self.predictions = None
 
     def annotate_image(self, img):
-        """Annotate the batch of frames with the face annotator."""
+        """Annotate the batch of frames with the annotator."""
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
         if not len(instances):
@@ -145,7 +145,7 @@ class CityscapesAnnotator(ImageAnnotator):
             "y1": boxes[:, 3],
         }
 
-        return {"instance": output}
+        return {"cityscape": output}
 
     def get_last_predictions(self):
         """Get last predictions as a Detectron classed object."""
