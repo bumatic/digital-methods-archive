@@ -3,6 +3,7 @@
 """
 
 from numpy import array, repeat, sum as np_sum, vstack
+from pandas import DataFrame
 
 from .abstract import ImageAnnotator
 
@@ -20,7 +21,17 @@ class InstanceAnnotator(ImageAnnotator):
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
         if not len(instances):
-            return None
+            return {"instance": DataFrame(columns = [
+                "index",
+                "height",
+                "width",
+                "class",
+                "prob",
+                "x0",
+                "y0",
+                "x1",
+                "y1"
+            ])}
 
         boxes = instances.get("pred_boxes").tensor.cpu().numpy()
         cls = [
@@ -73,7 +84,17 @@ class LVISAnnotator(ImageAnnotator):
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
         if not len(instances):
-            return None
+            return {"lvis": DataFrame(columns = [
+                "index",
+                "height",
+                "width",
+                "class",
+                "prob",
+                "x0",
+                "y0",
+                "x1",
+                "y1"
+            ])}
 
         boxes = instances.get("pred_boxes").tensor.cpu().numpy()
         cls = [
@@ -124,7 +145,17 @@ class CityscapesAnnotator(ImageAnnotator):
         self.predictions = self.predictor(img)
         instances = self.predictions["instances"]
         if not len(instances):
-            return None
+            return {"cityscape": DataFrame(columns = [
+                "index",
+                "height",
+                "width",
+                "class",
+                "prob",
+                "x0",
+                "y0",
+                "x1",
+                "y1"
+            ])}
 
         boxes = instances.get("pred_boxes").tensor.cpu().numpy()
         cls = [
@@ -182,7 +213,13 @@ class KeypointsAnnotator(ImageAnnotator):
 
         keypoints = instances.get("pred_keypoints").cpu().numpy()
         if not len(keypoints):
-            return None
+            return {"keypoint": DataFrame(columns = [
+                "index",
+                "kpname",
+                "x",
+                "y",
+                "score"
+            ])}
 
         keypoints = vstack([x for x in keypoints])
 
@@ -230,7 +267,15 @@ class PanopticAnnotator(ImageAnnotator):
         self.predictions = self.predictor(img)
         panseg = self.predictions["panoptic_seg"]
         if not len(panseg):
-            return None
+            return {"panoptic": DataFrame(columns = [
+                "index",
+                "height",
+                "width",
+                "score",
+                "is_thing",
+                "class",
+                "area"
+            ])}
 
         is_thing = [x.get("isthing") for x in panseg[1]]
         score = [x.get("score", 0) for x in panseg[1]]

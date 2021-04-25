@@ -50,9 +50,7 @@ def _process_output_values(output_vals):
     output = {}
     for key, value in output_vals.items():
         if isinstance(value, DataFrame):
-            output[key] = [value]
-        elif isinstance(value, list):
-            output[key] = [value]
+            output[key] = value
         else:
             assert isinstance(value, dict)
 
