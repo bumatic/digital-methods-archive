@@ -35,6 +35,7 @@
 &#34;&#34;&#34;
 
 from numpy import array, repeat, sum as np_sum, vstack
+from pandas import DataFrame
 
 from .abstract import ImageAnnotator
 
@@ -52,7 +53,17 @@ class InstanceAnnotator(ImageAnnotator):
         self.predictions = self.predictor(img)
         instances = self.predictions[&#34;instances&#34;]
         if not len(instances):
-            return None
+            return {&#34;instance&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;class&#34;,
+                &#34;prob&#34;,
+                &#34;x0&#34;,
+                &#34;y0&#34;,
+                &#34;x1&#34;,
+                &#34;y1&#34;
+            ])}
 
         boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
         cls = [
@@ -93,17 +104,29 @@ class InstanceAnnotator(ImageAnnotator):
 class LVISAnnotator(ImageAnnotator):
     &#34;&#34;&#34;Annotator for performing Large Vocabulary Instance Segmentation.&#34;&#34;&#34;
 
-    def __init__(self, model_name=&#34;mask_rcnn_X_101_32x8d_FPN_1x&#34;, device=&#34;cpu&#34;):
+    def __init__(
+        self, model_name=&#34;mask_rcnn_X_101_32x8d_FPN_1x&#34;, device=&#34;cpu&#34;
+    ):
         mname = &#34;LVISv0.5-InstanceSegmentation/&#34; + model_name + &#34;.yaml&#34;
         self.predictor, self.mdata = _load_detectron_model(mname, device)
         self.predictions = None
 
     def annotate_image(self, img):
-        &#34;&#34;&#34;Annotate the batch of frames with the face annotator.&#34;&#34;&#34;
+        &#34;&#34;&#34;Annotate the batch of frames with the annotator.&#34;&#34;&#34;
         self.predictions = self.predictor(img)
         instances = self.predictions[&#34;instances&#34;]
         if not len(instances):
-            return None
+            return {&#34;lvis&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;class&#34;,
+                &#34;prob&#34;,
+                &#34;x0&#34;,
+                &#34;y0&#34;,
+                &#34;x1&#34;,
+                &#34;y1&#34;
+            ])}
 
         boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
         cls = [
@@ -124,7 +147,7 @@ class LVISAnnotator(ImageAnnotator):
             &#34;y1&#34;: boxes[:, 3],
         }
 
-        return {&#34;instance&#34;: output}
+        return {&#34;lvis&#34;: output}
 
     def get_last_predictions(self):
         &#34;&#34;&#34;Get last predictions as a Detectron classed object.&#34;&#34;&#34;
@@ -142,7 +165,7 @@ class LVISAnnotator(ImageAnnotator):
 
 
 class CityscapesAnnotator(ImageAnnotator):
-    &#34;&#34;&#34;Annotator for performing Large Vocabulary Instance Segmentation.&#34;&#34;&#34;
+    &#34;&#34;&#34;Annotator for performing Cityscape Instance Segmentation.&#34;&#34;&#34;
 
     def __init__(self, model_name=&#34;mask_rcnn_R_50_FPN&#34;, device=&#34;cpu&#34;):
         mname = &#34;Cityscapes/&#34; + model_name + &#34;.yaml&#34;
@@ -150,11 +173,21 @@ class CityscapesAnnotator(ImageAnnotator):
         self.predictions = None
 
     def annotate_image(self, img):
-        &#34;&#34;&#34;Annotate the batch of frames with the face annotator.&#34;&#34;&#34;
+        &#34;&#34;&#34;Annotate the batch of frames with the annotator.&#34;&#34;&#34;
         self.predictions = self.predictor(img)
         instances = self.predictions[&#34;instances&#34;]
         if not len(instances):
-            return None
+            return {&#34;cityscape&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;class&#34;,
+                &#34;prob&#34;,
+                &#34;x0&#34;,
+                &#34;y0&#34;,
+                &#34;x1&#34;,
+                &#34;y1&#34;
+            ])}
 
         boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
         cls = [
@@ -175,7 +208,7 @@ class CityscapesAnnotator(ImageAnnotator):
             &#34;y1&#34;: boxes[:, 3],
         }
 
-        return {&#34;instance&#34;: output}
+        return {&#34;cityscape&#34;: output}
 
     def get_last_predictions(self):
         &#34;&#34;&#34;Get last predictions as a Detectron classed object.&#34;&#34;&#34;
@@ -212,7 +245,13 @@ class KeypointsAnnotator(ImageAnnotator):
 
         keypoints = instances.get(&#34;pred_keypoints&#34;).cpu().numpy()
         if not len(keypoints):
-            return None
+            return {&#34;keypoint&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;kpname&#34;,
+                &#34;x&#34;,
+                &#34;y&#34;,
+                &#34;score&#34;
+            ])}
 
         keypoints = vstack([x for x in keypoints])
 
@@ -260,7 +299,15 @@ class PanopticAnnotator(ImageAnnotator):
         self.predictions = self.predictor(img)
         panseg = self.predictions[&#34;panoptic_seg&#34;]
         if not len(panseg):
-            return None
+            return {&#34;panoptic&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;score&#34;,
+                &#34;is_thing&#34;,
+                &#34;class&#34;,
+                &#34;area&#34;
+            ])}
 
         is_thing = [x.get(&#34;isthing&#34;) for x in panseg[1]]
         score = [x.get(&#34;score&#34;, 0) for x in panseg[1]]
@@ -335,13 +382,13 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
 <span>(</span><span>model_name='mask_rcnn_R_50_FPN', device='cpu')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Annotator for performing Large Vocabulary Instance Segmentation.</p></div>
+<div class="desc"><p>Annotator for performing Cityscape Instance Segmentation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class CityscapesAnnotator(ImageAnnotator):
-    &#34;&#34;&#34;Annotator for performing Large Vocabulary Instance Segmentation.&#34;&#34;&#34;
+    &#34;&#34;&#34;Annotator for performing Cityscape Instance Segmentation.&#34;&#34;&#34;
 
     def __init__(self, model_name=&#34;mask_rcnn_R_50_FPN&#34;, device=&#34;cpu&#34;):
         mname = &#34;Cityscapes/&#34; + model_name + &#34;.yaml&#34;
@@ -349,11 +396,21 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
         self.predictions = None
 
     def annotate_image(self, img):
-        &#34;&#34;&#34;Annotate the batch of frames with the face annotator.&#34;&#34;&#34;
+        &#34;&#34;&#34;Annotate the batch of frames with the annotator.&#34;&#34;&#34;
         self.predictions = self.predictor(img)
         instances = self.predictions[&#34;instances&#34;]
         if not len(instances):
-            return None
+            return {&#34;cityscape&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;class&#34;,
+                &#34;prob&#34;,
+                &#34;x0&#34;,
+                &#34;y0&#34;,
+                &#34;x1&#34;,
+                &#34;y1&#34;
+            ])}
 
         boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
         cls = [
@@ -374,7 +431,7 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
             &#34;y1&#34;: boxes[:, 3],
         }
 
-        return {&#34;instance&#34;: output}
+        return {&#34;cityscape&#34;: output}
 
     def get_last_predictions(self):
         &#34;&#34;&#34;Get last predictions as a Detectron classed object.&#34;&#34;&#34;
@@ -401,17 +458,27 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
 <span>def <span class="ident">annotate_image</span></span>(<span>self, img)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Annotate the batch of frames with the face annotator.</p></div>
+<div class="desc"><p>Annotate the batch of frames with the annotator.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def annotate_image(self, img):
-    &#34;&#34;&#34;Annotate the batch of frames with the face annotator.&#34;&#34;&#34;
+    &#34;&#34;&#34;Annotate the batch of frames with the annotator.&#34;&#34;&#34;
     self.predictions = self.predictor(img)
     instances = self.predictions[&#34;instances&#34;]
     if not len(instances):
-        return None
+        return {&#34;cityscape&#34;: DataFrame(columns = [
+            &#34;index&#34;,
+            &#34;height&#34;,
+            &#34;width&#34;,
+            &#34;class&#34;,
+            &#34;prob&#34;,
+            &#34;x0&#34;,
+            &#34;y0&#34;,
+            &#34;x1&#34;,
+            &#34;y1&#34;
+        ])}
 
     boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
     cls = [
@@ -432,7 +499,7 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
         &#34;y1&#34;: boxes[:, 3],
     }
 
-    return {&#34;instance&#34;: output}</code></pre>
+    return {&#34;cityscape&#34;: output}</code></pre>
 </details>
 </dd>
 <dt id="dvt.detectron.CityscapesAnnotator.get_last_predictions"><code class="name flex">
@@ -502,7 +569,17 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
         self.predictions = self.predictor(img)
         instances = self.predictions[&#34;instances&#34;]
         if not len(instances):
-            return None
+            return {&#34;instance&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;class&#34;,
+                &#34;prob&#34;,
+                &#34;x0&#34;,
+                &#34;y0&#34;,
+                &#34;x1&#34;,
+                &#34;y1&#34;
+            ])}
 
         boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
         cls = [
@@ -560,7 +637,17 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
     self.predictions = self.predictor(img)
     instances = self.predictions[&#34;instances&#34;]
     if not len(instances):
-        return None
+        return {&#34;instance&#34;: DataFrame(columns = [
+            &#34;index&#34;,
+            &#34;height&#34;,
+            &#34;width&#34;,
+            &#34;class&#34;,
+            &#34;prob&#34;,
+            &#34;x0&#34;,
+            &#34;y0&#34;,
+            &#34;x1&#34;,
+            &#34;y1&#34;
+        ])}
 
     boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
     cls = [
@@ -658,7 +745,13 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
 
         keypoints = instances.get(&#34;pred_keypoints&#34;).cpu().numpy()
         if not len(keypoints):
-            return None
+            return {&#34;keypoint&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;kpname&#34;,
+                &#34;x&#34;,
+                &#34;y&#34;,
+                &#34;score&#34;
+            ])}
 
         keypoints = vstack([x for x in keypoints])
 
@@ -720,7 +813,13 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
 
     keypoints = instances.get(&#34;pred_keypoints&#34;).cpu().numpy()
     if not len(keypoints):
-        return None
+        return {&#34;keypoint&#34;: DataFrame(columns = [
+            &#34;index&#34;,
+            &#34;kpname&#34;,
+            &#34;x&#34;,
+            &#34;y&#34;,
+            &#34;score&#34;
+        ])}
 
     keypoints = vstack([x for x in keypoints])
 
@@ -798,17 +897,29 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
 <pre><code class="python">class LVISAnnotator(ImageAnnotator):
     &#34;&#34;&#34;Annotator for performing Large Vocabulary Instance Segmentation.&#34;&#34;&#34;
 
-    def __init__(self, model_name=&#34;mask_rcnn_X_101_32x8d_FPN_1x&#34;, device=&#34;cpu&#34;):
+    def __init__(
+        self, model_name=&#34;mask_rcnn_X_101_32x8d_FPN_1x&#34;, device=&#34;cpu&#34;
+    ):
         mname = &#34;LVISv0.5-InstanceSegmentation/&#34; + model_name + &#34;.yaml&#34;
         self.predictor, self.mdata = _load_detectron_model(mname, device)
         self.predictions = None
 
     def annotate_image(self, img):
-        &#34;&#34;&#34;Annotate the batch of frames with the face annotator.&#34;&#34;&#34;
+        &#34;&#34;&#34;Annotate the batch of frames with the annotator.&#34;&#34;&#34;
         self.predictions = self.predictor(img)
         instances = self.predictions[&#34;instances&#34;]
         if not len(instances):
-            return None
+            return {&#34;lvis&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;class&#34;,
+                &#34;prob&#34;,
+                &#34;x0&#34;,
+                &#34;y0&#34;,
+                &#34;x1&#34;,
+                &#34;y1&#34;
+            ])}
 
         boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
         cls = [
@@ -829,7 +940,7 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
             &#34;y1&#34;: boxes[:, 3],
         }
 
-        return {&#34;instance&#34;: output}
+        return {&#34;lvis&#34;: output}
 
     def get_last_predictions(self):
         &#34;&#34;&#34;Get last predictions as a Detectron classed object.&#34;&#34;&#34;
@@ -856,17 +967,27 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
 <span>def <span class="ident">annotate_image</span></span>(<span>self, img)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Annotate the batch of frames with the face annotator.</p></div>
+<div class="desc"><p>Annotate the batch of frames with the annotator.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def annotate_image(self, img):
-    &#34;&#34;&#34;Annotate the batch of frames with the face annotator.&#34;&#34;&#34;
+    &#34;&#34;&#34;Annotate the batch of frames with the annotator.&#34;&#34;&#34;
     self.predictions = self.predictor(img)
     instances = self.predictions[&#34;instances&#34;]
     if not len(instances):
-        return None
+        return {&#34;lvis&#34;: DataFrame(columns = [
+            &#34;index&#34;,
+            &#34;height&#34;,
+            &#34;width&#34;,
+            &#34;class&#34;,
+            &#34;prob&#34;,
+            &#34;x0&#34;,
+            &#34;y0&#34;,
+            &#34;x1&#34;,
+            &#34;y1&#34;
+        ])}
 
     boxes = instances.get(&#34;pred_boxes&#34;).tensor.cpu().numpy()
     cls = [
@@ -887,7 +1008,7 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
         &#34;y1&#34;: boxes[:, 3],
     }
 
-    return {&#34;instance&#34;: output}</code></pre>
+    return {&#34;lvis&#34;: output}</code></pre>
 </details>
 </dd>
 <dt id="dvt.detectron.LVISAnnotator.get_last_predictions"><code class="name flex">
@@ -957,7 +1078,15 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
         self.predictions = self.predictor(img)
         panseg = self.predictions[&#34;panoptic_seg&#34;]
         if not len(panseg):
-            return None
+            return {&#34;panoptic&#34;: DataFrame(columns = [
+                &#34;index&#34;,
+                &#34;height&#34;,
+                &#34;width&#34;,
+                &#34;score&#34;,
+                &#34;is_thing&#34;,
+                &#34;class&#34;,
+                &#34;area&#34;
+            ])}
 
         is_thing = [x.get(&#34;isthing&#34;) for x in panseg[1]]
         score = [x.get(&#34;score&#34;, 0) for x in panseg[1]]
@@ -1019,7 +1148,15 @@ def _load_detectron_model(mname, device=&#34;cpu&#34;):
     self.predictions = self.predictor(img)
     panseg = self.predictions[&#34;panoptic_seg&#34;]
     if not len(panseg):
-        return None
+        return {&#34;panoptic&#34;: DataFrame(columns = [
+            &#34;index&#34;,
+            &#34;height&#34;,
+            &#34;width&#34;,
+            &#34;score&#34;,
+            &#34;is_thing&#34;,
+            &#34;class&#34;,
+            &#34;area&#34;
+        ])}
 
     is_thing = [x.get(&#34;isthing&#34;) for x in panseg[1]]
     score = [x.get(&#34;score&#34;, 0) for x in panseg[1]]

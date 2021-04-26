@@ -39,6 +39,7 @@ from importlib import import_module
 import ssl
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 from numpy import float32, expand_dims, uint8
+from pandas import DataFrame
 
 from .abstract import ImageAnnotator
 
@@ -55,8 +56,9 @@ class FaceAnnotator(ImageAnnotator):
 
         img_rgb = cvtColor(img, COLOR_BGR2RGB)
         f_faces = self.detector.detect(img_rgb)
-        n_face = len(f_faces[&#34;top&#34;])
-        if self.embedding is not None and n_face &gt; 0:
+
+        if self.embedding is not None and f_faces is not None:
+            n_face = len(f_faces[&#34;top&#34;])
             f_faces[&#34;embed&#34;] = []
             for i in range(n_face):
                 embed = self.embedding.embed(
@@ -67,6 +69,11 @@ class FaceAnnotator(ImageAnnotator):
                     left=f_faces[&#34;left&#34;][i],
                 )
                 f_faces[&#34;embed&#34;] += [embed]
+
+        if not f_faces:
+            f_faces = DataFrame(
+                columns = [&#34;top&#34;, &#34;right&#34;, &#34;bottom&#34;, &#34;left&#34;, &#34;confidence&#34;]
+            )
 
         return {&#34;face&#34;: f_faces}
 
@@ -773,8 +780,9 @@ an array in RGB format.</dd>
 
         img_rgb = cvtColor(img, COLOR_BGR2RGB)
         f_faces = self.detector.detect(img_rgb)
-        n_face = len(f_faces[&#34;top&#34;])
-        if self.embedding is not None and n_face &gt; 0:
+
+        if self.embedding is not None and f_faces is not None:
+            n_face = len(f_faces[&#34;top&#34;])
             f_faces[&#34;embed&#34;] = []
             for i in range(n_face):
                 embed = self.embedding.embed(
@@ -785,6 +793,11 @@ an array in RGB format.</dd>
                     left=f_faces[&#34;left&#34;][i],
                 )
                 f_faces[&#34;embed&#34;] += [embed]
+
+        if not f_faces:
+            f_faces = DataFrame(
+                columns = [&#34;top&#34;, &#34;right&#34;, &#34;bottom&#34;, &#34;left&#34;, &#34;confidence&#34;]
+            )
 
         return {&#34;face&#34;: f_faces}</code></pre>
 </details>
@@ -809,8 +822,9 @@ an array in RGB format.</dd>
 
     img_rgb = cvtColor(img, COLOR_BGR2RGB)
     f_faces = self.detector.detect(img_rgb)
-    n_face = len(f_faces[&#34;top&#34;])
-    if self.embedding is not None and n_face &gt; 0:
+
+    if self.embedding is not None and f_faces is not None:
+        n_face = len(f_faces[&#34;top&#34;])
         f_faces[&#34;embed&#34;] = []
         for i in range(n_face):
             embed = self.embedding.embed(
@@ -821,6 +835,11 @@ an array in RGB format.</dd>
                 left=f_faces[&#34;left&#34;][i],
             )
             f_faces[&#34;embed&#34;] += [embed]
+
+    if not f_faces:
+        f_faces = DataFrame(
+            columns = [&#34;top&#34;, &#34;right&#34;, &#34;bottom&#34;, &#34;left&#34;, &#34;confidence&#34;]
+        )
 
     return {&#34;face&#34;: f_faces}</code></pre>
 </details>

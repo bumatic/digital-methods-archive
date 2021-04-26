@@ -2,7 +2,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 long_description= """
-The Distant TV Toolkit is a Python package designed to facilitate the
+The Distant Viewing Toolkit is a Python package designed to facilitate the
 computational analysis of visual culture. It contains low-level architecture
 for applying state-of-the-art computer vision algorithms to still and moving
 images. Extracted information can be visualized for search and discovery or
