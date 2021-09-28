@@ -1,0 +1,107 @@
+<article class="result">
+<section class="result-tree" data-dataset-key="{{ dataset.key }}">
+    <div class="card query{% if not dataset.is_finished() %} unfinished{% endif %}">
+
+        <h2 class="blocktitle">
+            <span><a href="{{ url_for('show_results', key=dataset.key) }}">{{ dataset.get_label() }}</a></span>
+        </h2>
+
+        {% if current_user.is_authenticated %}
+            <nav class="dataset-toolbox" aria-label="Actions for dataset">
+                <ul>
+                    <li><a href="{{ url_for('toggle_favourite_interactive', key=dataset.key) }}" class="toggle-favourites"><i class="fa{% if is_favourite %}r{% else %}s{% endif %} fa-star" aria-hidden="true"></i> {% if is_favourite %}Delete from{% else %}Add to{% endif %} favourites</a></li>
+                    <li><a href="{{ url_for('show_result', key=dataset.key) }}/"><i class="fas fa-link" aria-hidden="true"></i> Permalink</a></li>
+                    {% if current_user.get_id() == dataset.parameters.user or current_user.is_admin() %}
+                        <li><a href="{{ url_for('delete_dataset_interactive', key=dataset.key) }}" class="confirm-first" data-confirm-action="delete this dataset"><i class="fas fa-trash-alt" aria-hidden="true"></i> Delete dataset</a></li>
+                        <li><a href="{{ url_for('restart_dataset', key=dataset.key) }}" class="confirm-first" data-confirm-action="delete all results for this dataset, including processor results, and re-run the query"><i class="fas fa-sync-alt" aria-hidden="true"></i> Re-run dataset</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+
+        <dl class="metadata-wrapper">
+        {% if timestamp_expires %}
+            <div class="fullwidth notice">
+                <strong>Note:</strong> this dataset will no longer be available after {{ timestamp_expires|datetime("%d %b %Y, %H:%M") }}
+            </div>
+        {% endif %}
+        {% if "copied_from" in dataset.parameters %}
+            <div class="fullwidth notice">
+                This dataset was generated from <a href="{{ url_for('show_result', key=dataset.parameters.copied_from) }}">another dataset</a>.
+            </div>
+        {% endif %}
+            <div>
+                <dt>Data source</dt>
+                <dd>
+                    <span class="property-badge">{{ dataset.parameters.datasource if "datasource" in dataset.parameters else "4chan" }}{% if "board" in dataset.parameters and dataset.parameters.board %}/{{ dataset.parameters.board }}/{% endif %}</span>
+                </dd>
+            </div>
+
+            <div>
+                <dt>Queued at</dt>
+                <dd>{{ dataset.timestamp|datetime(fmt="%d %b %Y, %H:%M") }}</dd>
+            </div>
+
+        {% if current_user.is_authenticated and current_user.is_admin() and dataset.parameters.user %}
+            <div class="fullwidth">
+                <dt>Queued by</dt>
+                <dd>{{ dataset.parameters.user }}</dd>
+            </div>
+        {% endif %}
+
+            <div class="fullwidth">
+                <dt>Parameters</dt>
+                <dd>{% include 'result-metadata.html' %}</dd>
+            </div>
+
+            <div class="fullwidth" id="dataset-results">
+            {% if dataset.is_finished() and dataset.num_rows > 0 %}
+                {% include "result-result-row.html" %}
+            {% else %}
+                <dt>Status</dt>
+                <dd class="dataset-status">{% include "result-status.html" %}</dd>
+            </div>
+            {% endif %}
+        </dl>
+    </div>
+
+    {% if dataset.children %}
+        <h3 class="blocktitle section-subheader">
+            <span>Analysis results</span>
+            <button id="expand-datasets">Expand all</button>
+        </h3>
+    {% endif %}
+    <ol class="child-list top-level">
+        {% for child in dataset.children %}
+            {% include "result-child.html" %}
+        {% endfor %}
+    </ol>
+</section>
+
+{% if dataset.num_rows > 0 and dataset.get_available_processors()|length > 0 and current_user.is_authenticated %}
+    <section class="analysis-gallery">
+
+        <h3 class="blocktitle section-subheader"><span>Analytical processors</span></h3>
+        {% set part = "main" %}
+    <div class="intro">
+        <p>Start your analysis of the retrieved data by choosing one of the analysis modules below.
+            Note that some may take a while to complete, so carefully consider which one you want to run
+            before queueing it.</p>
+        <p>If you are new to {{ __tool_name }}, we recommend you consult the
+            <a href="https://bit.ly/37fzES6">4CAT Cookbook</a>, which explains this interface and
+            includes examples of several analyses you can run.</p>
+    </div>
+        {% set cat = namespace(egory='') %}
+        {% for processor in dataset.get_available_processors().values() %}
+            {% if processor.category != cat.egory %}
+                {% if cat.egory != '' %}</ol>{% endif %}
+                {% set cat.egory = processor.category %}
+                <h4 class="blocktitle section-subheader"><span>{{ processor.category }}</span></h4>
+                <ol class="processor-list child-list">
+            {% endif %}
+            {% set git_url = dataset.get_version_url("backend/processors/" + processor.filepath)%}
+            {% include "processor-details.html" %}
+        {% endfor %}
+    </section>
+{% endif %}
+</article>

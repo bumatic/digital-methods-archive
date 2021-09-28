@@ -1,0 +1,237 @@
+@import url('reset.css');
+@import url('dataset-page.css');
+
+
+/** --------------------- *
+            Fonts
+  * --------------------- */
+@font-face {
+    font-family: 'Open Sans';
+    src: url("../fonts/OpenSans-Regular.ttf")
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: bold;
+    src: url("../fonts/OpenSans-Bold.ttf")
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    src: url("../fonts/OpenSans-Italic.ttf")
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: bold;
+    font-style: italic;
+    src: url("../fonts/OpenSans-BoldItalic.ttf")
+}
+
+@font-face {
+    font-family: 'Fixedsys';
+    src: url("../fonts/fsex300-webfont.woff")
+}
+
+/** --------------------- *
+      Colour definitions
+  * --------------------- */
+:root {
+    --accent: #CE1B28;
+    --highlight: #FF2231;
+    --accent-alternate: #19B0A3;
+    --accent-okay: #26b018;
+    --accent-warning: #b05d13;
+    --accent-error: #ff2231;
+    --gray-dark: #DFDFDF;
+    --gray: #E9E9E9;
+    --gray-light: #EEE;
+    --contrast-bright: #F5F5F5;
+    --contrast-dark: #21202E;
+    --always-white: #FFF;
+    --text: #37373C;
+    --warning: var(--accent);
+}
+
+
+/** --------------------- *
+     Basic HTML elements
+  * --------------------- */
+*, body, code, select, input, textarea {
+    font-family: 'Open Sans', 'Trebuchet MS', sans-serif;
+}
+
+body {
+    background: var(--contrast-bright);
+    color: var(--text);
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--highlight);
+    text-decoration: underline;
+}
+
+code {
+    color: var(--accent-alternate);
+    font-weight: bold;
+}
+
+em, strong {
+    font-weight: bold;
+}
+
+/** --------------------- *
+            Forms
+  * --------------------- */
+select, input, textarea {
+    background: var(--gray);
+    border: 1px solid var(--gray);
+    font: inherit;
+    padding: 0.25em;
+    max-width: 80%;
+}
+
+select, input {
+    max-width: 15em;
+}
+
+.form-element label {
+    text-align: right;
+    padding-right: 1em;
+}
+
+button, .button-like {
+    border: 2px solid var(--contrast-dark);
+    background: var(--contrast-bright);
+    color: var(--text);
+    border-radius: 0.5em;
+    font-size: inherit;
+    cursor: pointer;
+    padding: 0.25em 1em;
+}
+
+button:hover, .button-like:not(.inactive):hover {
+    background: var(--accent);
+    color: var(--contrast-bright);
+}
+
+/** --------------------- *
+            Specific 
+            for word
+            networks
+  * --------------------- */
+
+.button-like.inactive {
+    cursor: default;
+    border-color: var(--gray-dark);
+}
+
+#graph-container {
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	position: absolute;
+	z-index: 0;
+    overflow: hidden;
+}
+
+#control-panel {
+	position: relative;
+    line-height: 1.5;
+    max-height: 97vh;
+    max-width: 250px;
+	padding: 10px;
+	z-index: 1;
+    overflow-y: scroll;
+    background-color: rgba(250, 250, 250, 0.8)
+}
+
+#network-name-box {
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.control-panel-notice {
+	padding: 8px;
+}
+
+#graph-manipulation .parameter-input {
+    width: 45px;
+    height: 20px;
+    float: right;
+}
+
+#graph-manipulation .parameter-input.full-width {
+    width: 95%;
+    height: 20px;
+    float: center;
+}
+
+.graph-manipulation-box {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.graph-manipulation-box-header {
+    color: var(--contrast-dark);
+}
+
+h2.graph-manipulation-box-header {
+    font-weight: bold;
+    font-size: 23px;
+    margin-bottom: 10px;
+}
+
+h3.graph-manipulation-box-header {
+    font-size: 16px;
+    font-style: italic;
+    color: var(--accent);
+}
+
+.graph-manipulation-subbox {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.graph-manipulation-subbox > p {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#graph-manipulation > .standalone-button {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#footer {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 10px;
+	z-index: 1;
+}
+
+.alert-box {
+	color: var(--accent-error);
+    font-weight: bold;
+}
+
+#hourglass {
+
+}
+
+hr {
+	color: var(--gray-light);
+}
+
+i.invisible {
+    display: none;
+}

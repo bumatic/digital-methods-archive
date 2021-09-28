@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block body_class %}plain-page frontpage {{ body_class }}{% endblock %}
+
+{% block body %}
+    <article class="with-aside">
+        <section>
+            <h2><span>What is {{ __tool_name }}?</span></h2>
+            <p>This is an instance of the 4CAT Capture and Analysis Toolkit, a software suite that can capture data
+                from a variety of online sources, and analyze the data through analytical processors.</p>
+            <p>4CAT is developed by <a href="https://oilab.eu">OILab</a> and the <a
+                    href="https://www.digitalmethods.net">Digital Methods Initiative</a> at the University of Amsterdam.
+                For more information, take a look at the <a
+                        href="https://github.com/digitalmethodsinitiative/4cat">GitHub repository</a>.</p>
+            <h2><span>News and updates</span></h2>
+            <ol class="news">
+                {% if news %}
+                {% for item in news %}
+                <li>
+                    <time>{{ item.time }}</time>
+                    {{ item.text|markdown|safe }}
+                </li>
+                {% endfor %}
+                {% else %}
+                <li>You can add news for your 4CAT instance in <code>news.json</code> in the 4CAT root folder.</li>
+                {% endif %}
+            </ol>
+        </section>
+
+        <aside>
+            <h2><span>Available data sources</span></h2>
+            <p>The following data sources and boards are currently available for analysis:</p>
+            <ul class="datasource-list">
+                {% if stats %}
+                    {% for datasource in datasources %}{% if datasource != "overall" %}
+                        <li>
+                            {{ stats[datasource]["name"] if "name" in stats[datasource] else datasource|capitalize }}
+                            {% if "boards" in datasources[datasource] and datasources[datasource]["boards"] != "*" and datasources[datasource]["boards"] != ["*"] %}
+                                <ul>
+                                    {% for board in datasources[datasource]["boards"]|sort %}
+                                        <li>
+                                            {{ board }}
+                                            {% if datasource in stats and board in stats[datasource]["boards"] %}
+                                            ({{ stats[datasource]["boards"][board]["posts"]|numberify }} posts
+                                            from {{ stats[datasource]["boards"][board]["first"]|datetime('%d %b %Y') }} to {{ stats[datasource]["boards"][board]["last"]|datetime('%d %b %Y'
+                                            )
+                                            }})
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endif %}{% endfor %}
+                {% else %}
+                    {% for datasource in datasources %}
+                        <li>{{ datasources[datasource].name }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </aside>
+    </article>
+{% endblock %}

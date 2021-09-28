@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}Create dataset{% endblock %}
+{% block body_class %}plain-page frontpage {% endblock %}
+
+{% block body %}
+    <article class="with-aside">
+        <section>
+            <div>
+                <h2><span>Create new dataset</span></h2>
+            </div>
+
+            <form id="query-form" action="{{ url_for('queue_dataset') }}" method="POST" enctype="multipart/form-data">
+                <fieldset class="datasource-form">
+                    <p><br>Please be conservative; 4CAT is a shared resource and large dataset queries may prevent others
+                        from using it. We recommend to start with smaller date ranges and specific queries and then cast
+                        a wider net if needed.</p>
+                    <div class="form-element">
+                        <label for="datasource-select">Data source:</label>
+                        <div>
+                            <select name="datasource" id="datasource-select">
+                                {% set groups = namespace(dynamic_header = False, static_header = False) %}
+                                {% for datasource in datasources if not datasources[datasource].is_static %}
+                                    {% if not groups.dynamic_header %}<optgroup label="(Near) Real-time">{% set groups.dynamic_header = True %}{% endif %}
+                                    <option value="{{ datasource }}">{{ datasources[datasource].name }}</option>
+                                {% endfor %}
+                                {% if groups.dynamic_header %}</optgroup>{% endif %}
+                                {% for datasource in datasources if datasources[datasource].is_static %}
+                                    {% if not groups.static_header %}<optgroup label="Static (snapshot)">{% set groups.static_header = True %}{% endif %}
+                                    <option value="{{ datasource }}">{{ datasources[datasource].name }}</option>
+                                {% endfor %}
+                                {% if groups.static_header %}</optgroup>{% endif %}
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div id="datasource-form">
+                    Loading query form for chosen datasource...
+                </div>
+
+                <div id="data-options">
+                    <p class="form-intro">4CAT can replace author names with their hash value. Other personal
+                        information may persist; it is your responsibility to further anonymise data where
+                        appropriate.</p>
+                    <div class="form-element">
+                        <label for="data-pseudonymise">Pseudonymise:</label>
+                        <div class="filter-parameters" id="board-filter">
+                            <label><input type="checkbox" checked="checked" name="pseudonymise" id="data-pseudonymise"> Replace author names with hash values</label>
+                        </div>
+                    </div>
+                    <div class="form-element">
+                        <label for="dataset-label">Dataset name:</label>
+                        <input id="dataset-label" name="label">
+
+                        <button class="tooltip-trigger" aria-controls="tooltip-dataset-label" aria-label="Extended help for option">?</button>
+                        <p role="tooltip" id="tooltip-dataset-label">A name will be generated automatically if you do not provide a one</p>
+                    </div>
+                </div>
+
+                <div class="submit-container">
+                    <button>Create dataset</button>
+                </div>
+            </form>
+        </section>
+
+        <aside>
+            <div>
+                <h2 id="query-status-header"><span>Dataset status</span></h2>
+                <p id="query-status">
+                    <span class="message">Waiting for input...</span><span class="dots"></span>
+                </p>
+                <h2 id="search-queue-header"><span>Queue</span></h2>
+                <p id="search-queue-status">
+                    <span class="search-queue-message"></span>
+                    <span class="search-queue-list"></span>
+                </p>
+                <h2><span>Results</span></h2>
+                <ol id="query-results">
+                </ol>
+            </div>
+        </aside>
+    </article>
+{% endblock %}

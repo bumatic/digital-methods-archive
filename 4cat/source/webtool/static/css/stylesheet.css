@@ -1,0 +1,826 @@
+@import url('reset.css');
+@import url('dataset-page.css');
+@import url('control-panel.css');
+
+
+/** --------------------- *
+            Fonts
+  * --------------------- */
+@font-face {
+    font-family: 'Open Sans';
+    src: url("../fonts/OpenSans-Regular.ttf")
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: bold;
+    src: url("../fonts/OpenSans-Bold.ttf")
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    src: url("../fonts/OpenSans-Italic.ttf")
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: bold;
+    font-style: italic;
+    src: url("../fonts/OpenSans-BoldItalic.ttf")
+}
+
+@font-face {
+    font-family: 'Fixedsys';
+    src: url("../fonts/fsex300-webfont.woff")
+}
+
+/** --------------------- *
+      Colour definitions
+  * --------------------- */
+:root {
+    --accent: #CE1B28;
+    --highlight: #FF2231;
+    --accent-alternate: #19B0A3;
+    --accent-okay: #26b018;
+    --accent-warning: #b05d13;
+    --accent-error: #ff2231;
+    --gray-dark: #DFDFDF;
+    --gray: #E9E9E9;
+    --gray-light: #EEE;
+    --contrast-bright: #F5F5F5;
+    --contrast-dark: #21202E;
+    --always-white: #FFF;
+    --text: #37373C;
+    --warning: var(--accent);
+}
+
+
+/** --------------------- *
+     Basic HTML elements
+  * --------------------- */
+*, body, code, select, input, textarea {
+    font-family: 'Open Sans', 'Trebuchet MS', sans-serif;
+}
+
+body {
+    background: var(--contrast-bright);
+    color: var(--text);
+    line-height: 1.5em;
+    padding-bottom: 5em;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--highlight);
+    text-decoration: underline;
+}
+
+code {
+    color: var(--accent-alternate);
+    font-weight: bold;
+}
+
+em, strong {
+    font-weight: bold;
+}
+
+table {
+    margin: 1em auto;
+    font-size: inherit;
+    border-collapse: collapse;
+    border: 2px solid var(--contrast-dark);
+}
+
+table.fullwidth {
+    width: 100%;
+}
+
+table td, table th {
+    font-size: inherit;
+    padding: 0 0.5em;
+    border: 2px solid var(--contrast-dark);
+}
+
+table th {
+    text-align: center;
+    background: var(--accent-alternate);
+    color: var(--contrast-bright);
+    font-weight: bold;
+    padding: 0 1em;
+}
+
+
+/** --------------------- *
+            Forms
+  * --------------------- */
+select, input, textarea {
+    background: var(--gray);
+    border: 1px solid var(--gray);
+    font: inherit;
+    padding: 0.25em;
+    max-width: 80%;
+}
+
+select, input {
+    max-width: 15em;
+}
+
+input[type=date] {
+    max-width: 10em;
+}
+
+input[type=radio], input[type=checkbox] {
+    justify-self: start;
+    min-width: 0;
+}
+
+fieldset {
+    border-bottom: 1px dotted var(--contrast-dark);
+}
+
+p.form-notice {
+    text-align: center;
+    color: var(--accent-alternate);
+    margin-top: 0.5em;
+}
+
+.form-element {
+    display: flex;
+    align-items: center;
+    min-height: 3.5em;
+    margin: 0 1em 0.5em 1em;
+}
+
+.optional-form-element {
+    transition: 0.25s;
+    max-height: 10em;
+}
+
+article.small .form-element {
+    display: grid;
+    grid-template-columns: 34% 66%;
+}
+
+.form-element > *:not(input, select, button) {
+    min-width: 11em;
+    max-width: 75%;
+}
+
+.form-element > textarea {
+    min-width: 25em;
+    min-height: 6em;
+}
+
+.form-element > textarea.code {
+    font-family: monospace;
+}
+
+article.small .form-element > *:not([type=radio], [type=checkbox]) {
+    min-width: 5em;
+}
+
+.form-element label {
+    text-align: right;
+    padding-right: 1em;
+}
+
+.form-element.missing label {
+    color: var(--accent-error);
+}
+
+.form-element.missing input, .form-element.missing textarea {
+    border: 1px solid var(--accent-error);
+}
+
+.form-element .option-help {
+    padding-top: 0.5em;
+}
+
+.form-element button.tooltip-trigger {
+    margin-left: 0.5em;
+}
+
+.submit-container {
+    text-align: center;
+    padding: 1em;
+}
+
+button, .button-like {
+    border: 2px solid var(--contrast-dark);
+    background: var(--contrast-bright);
+    color: var(--text);
+    border-radius: 0.5em;
+    font-size: inherit;
+    cursor: pointer;
+    padding: 0.25em 1em;
+}
+
+button:hover, .button-like:not(.inactive):hover {
+    background: var(--accent);
+    color: var(--contrast-bright);
+}
+
+.button-like.inactive {
+    cursor: default;
+    border-color: var(--gray-dark);
+}
+
+.form-intro {
+    margin-top: 1em;
+}
+
+.form-footer {
+    text-align: center;
+    padding-bottom: 1em;
+}
+
+/** --------------------- *
+  Utility classes -> Lists
+  * --------------------- */
+.expandable {
+    display: inline;
+}
+
+/** --------------------- *
+  Utility classes -> Lists
+  * --------------------- */
+.hidden {
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-width: 0;
+}
+.ellipsis {
+    font-weight: bold;
+    color: var(--accent-alternate);
+}
+nav > ul.flat {
+    list-style: none;
+}
+
+nav > ul.flat > li {
+    display: inline-block;
+}
+
+nav > ul.flat > li:not(:last-child)::after {
+    content: '\2022';
+    margin-left: 0.5em;
+}
+
+.content-container .content-placeholder {
+    padding: 0.5em 1em;
+    text-align: center;
+}
+
+
+
+/** --------------------- *
+          Tooltips
+  * --------------------- */
+*[role=tooltip], article p[role=tooltip] {
+	display: none;
+	background: var(--gray);
+	color: var(--text);
+	padding: 0.5em;
+	box-sizing: border-box;
+	position: absolute;
+	max-width: 25em;
+	border: 2px solid var(--contrast-dark);
+}
+
+*[role=tooltip].force-width, article p[role=toolip].force-width {
+    min-width: 25em;
+}
+
+button.tooltip-trigger, button.popup-trigger {
+	font-size: 0.8em;
+	position: relative;
+	top: -0.1em;
+    padding: 0 0.5em;
+    border-width: 1px;
+    border-color: var(--gray-dark);
+}
+
+/** --------------------- *
+            Popups
+  * --------------------- */
+*[role=dialog] {
+    display: none;
+}
+
+.popup-trigger {
+    cursor: pointer;
+}
+
+#popup {
+    display: none;
+    position: fixed;
+    background: var(--gray);
+    color: var(--text);
+    padding: 1em;
+    box-sizing: border-box;
+    border: 2px solid var(--contrast-dark);
+    width: 50%;
+    height: 50%;
+    max-width: 960px;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+#popup .content {
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+}
+
+#popup .content em {
+    font-weight: normal;
+    font-style: italic;
+}
+
+#popup h2 {
+    font-weight: bold;
+    font-size: 1.25em;
+    padding: 0.8em;
+}
+
+#popup[aria-expanded=true] {
+    display: block;
+}
+
+#blur {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+#blur[aria-expanded=true] {
+    display: block;
+}
+
+#popup-close {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    background: var(--contrast-bright);
+    border-radius: 2px;
+    border: 2px solid var(--contrast-dark);
+}
+
+/** --------------------- *
+         Site header
+  * --------------------- */
+h1 {
+    background: var(--accent);
+    color: var(--contrast-bright);
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0.75em 0;
+}
+
+h1 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.main-nav {
+    background: var(--contrast-dark);
+    margin-bottom: 2em;
+    color: var(--contrast-bright);
+    box-shadow: 0 5px 10px #888;
+    border: 1em solid var(--contrast-dark);
+    border-width: 0.4em 0 0 0;
+}
+
+.main-nav ul {
+    list-style: none;
+    text-align: center;
+    margin: 0.25em 0 0 0;
+    padding-bottom: 0.5em;
+    background: var(--contrast-dark);
+}
+
+.main-nav li {
+    display: inline-block;
+}
+
+.main-nav li:not(:last-child):after {
+    content: '\02022';
+    margin-left: 0.5em;
+}
+
+.main-nav li a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.main-nav li a:hover, .main-nav li a:focus {
+    text-decoration: underline;
+}
+
+.site-announcement {
+    text-align: center;
+    background: var(--accent);
+    color: var(--contrast-bright);
+    padding: 0.5em 0;
+}
+
+.site-announcement p::before {
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free';
+    content: '\f0f3';
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+.site-announcement a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+
+/** --------------------- *
+         Site footer
+  * --------------------- */
+.fixed-footer {
+    box-sizing: border-box;
+    position: fixed;
+    bottom: 0;
+    background: var(--contrast-dark);
+    color: var(--contrast-bright);
+    padding: 0.6em 1em;
+    width: 100%;
+    text-align: right;
+}
+
+.fixed-footer a {
+    color: inherit;
+}
+
+
+/** --------------------- *
+      Basic page layout
+  * --------------------- */
+article, .block, .article-ish {
+    min-width: 540px;
+    margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+  article, .block, .article-ish {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  article, .block, .article-ish{
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  article, .block, .article-ish {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  article, .block, .article-ish {
+    max-width: 1140px;
+  }
+}
+
+article.small {
+    max-width: 50%;
+}
+
+article.with-aside {
+    display: grid;
+    grid-template-columns: 66% 34%;
+    grid-column-gap: 1em;
+}
+
+article h2, .blocktitle {
+    border-left: 0.5em solid var(--accent);
+    background: var(--contrast-dark);
+    color: var(--contrast-bright);
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0.5em 0;
+}
+
+article h2 a, .blocktitle a {
+    color: inherit;
+}
+
+h4 {
+    font-weight: bold;
+}
+
+h4.blocktitle, h3.blocktitle {
+    border-left: 0;
+    text-align: left;
+    font-size: 1em;
+    padding-left: 1em;
+}
+
+article section h2:not(:first-child), article aside h2:not(:first-child) {
+    margin-top: 1em;
+}
+
+article h2 + p {
+    margin-top: 1em;
+}
+
+article h3:not(.blocktitle) {
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: 1.2em 0.8em 0.8em 0.8em;
+}
+
+article section, article aside,
+.query.card  {
+    background: var(--always-white);
+}
+
+article p {
+    margin: 0 1em 0.5em 1em;
+}
+
+p.banner {
+    text-align: center;
+    padding: 1em;
+}
+
+ol li {
+    padding: 1em;
+}
+
+ol li:nth-child(even) {
+    background: var(--gray-light);
+}
+
+article section ul, article aside ul {
+    list-style: disc outside;
+    margin-left: 2.5em;
+}
+
+article section li p, article aside li p {
+    margin-left: 0;
+}
+
+/** --------------------- *
+          Pagination
+  * --------------------- */
+.pagination ol {
+	list-style: none;
+	margin: 0 auto;
+	text-align: center;
+	margin-top: 1em;
+}
+
+.pagination li {
+	display: inline-block;
+    padding: 0;
+    margin-right: 0.5em;
+}
+
+.pagination li a {
+	display: block;
+}
+
+.pagination li.page a, .pagination li.page .current {
+	border: 2px solid var(--contrast-dark);
+	padding: 0.25em;
+	text-align: center;
+	min-width: 2.25em;
+	display: block;
+	text-decoration: none;
+}
+
+.pagination li.page a:hover, .pagination li.page a:focus {
+	background: var(--accent);
+    color: var(--contrast-bright);
+}
+
+.tabs {
+    border-bottom: 1px dotted var(--contrast-dark);
+    max-height: 5em;
+    transition: 0.25s;
+    overflow: hidden;
+    background: var(--gray);
+}
+
+.tabs.inactive {
+    max-height: 0;
+    border-width: 0;
+}
+
+.tabs ul {
+    list-style: none;
+    text-align: center;
+    padding: 0.5em;
+}
+
+.tabs ul li {
+    display: inline-block;
+    background: var(--gray-light);
+    padding: 0 0.5em;
+    border: 1px solid var(--gray-dark);
+}
+
+.tabs ul li.current, .tabs ul li:hover {
+    border-color: var(--contrast-dark);
+    background: var(--gray-dark);
+}
+
+.tabs ul li:not(:last-child) {
+    margin-right: 1em;
+}
+
+.tabs ul li a {
+    text-decoration: none;
+}
+
+/** --------------------- *
+   Pages -> Markdown pages
+  * --------------------- */
+.markdown-page section {
+    padding-bottom: 1em;
+}
+
+/** --------------------- *
+     Pages -> Front page
+  * --------------------- */
+.frontpage li time {
+    font-weight: bold;
+}
+
+.frontpage li time::after {
+    content: '\02022';
+    margin-left: 0.5em;
+}
+
+.frontpage .news time + p {
+    display: inline;
+}
+
+/** --------------------- *
+   Pages -> Create Dataset
+  * --------------------- */
+#query-status {
+    text-align: center;
+    margin: 1.5em 0 0 0;
+    padding: 0.5em 1em;
+}
+
+#query-status.active {
+    animation: scroll-background 2s ease infinite;
+}
+
+#query-status button {
+    margin: 0.5em auto 0 auto;
+    display: block;
+    max-width: 7em;
+    clear: both;
+}
+
+@keyframes scroll-background {
+    0% {
+        background:#FFF;
+    }
+    50% {
+        background:#E9E9E9;
+    }
+    100% {
+        background:#FFF;
+    }
+}
+
+/** --------------------- *
+  Pages -> Queue
+  * --------------------- */
+
+.queue-list > ul {
+    list-style-type: none;
+}
+
+/** --------------------- *
+  Pages -> Results metadata
+  * --------------------- */
+.inline-label {
+    color: var(--accent-alternate);
+}
+
+.inline-query {
+    overflow-wrap: anywhere;
+}
+
+.property-badge {
+    font-size: 0.6em;
+    display: inline;
+    border: 1px solid var(--contrast-dark);
+    border-radius: 2px;
+    padding: 0.1em 0.5em;
+    position: relative;
+    top: -1px;
+	vertical-align: baseline;
+}
+
+.second-tier {
+    color: var(--gray-dark);
+}
+
+.warning {
+    color: var(--warning);
+}
+
+/** --------------------- *
+  Pages -> Results overview
+  * --------------------- */
+.result-list .view-controls {
+    margin-bottom: 0.5em;
+    text-align: right;
+}
+
+.result-list .view-controls ul {
+    list-style: none;
+}
+
+.result-list .view-controls * {
+    display: inline-block;
+}
+
+.result-list p {
+    margin-bottom: 0;
+}
+
+.result-list .no_results p {
+    opacity: 0.5;
+}
+
+.result-list .no_results:hover p {
+    opacity: 1;
+}
+
+.result-list h4 {
+    display: inline-block;
+}
+
+ol.result-list li {
+    display: grid;
+    grid-template-columns: auto auto 10em;
+}
+
+ol.result-list li:not(.has_results) {
+    grid-template-columns: auto auto;
+}
+
+ol.result-list .property-container.status, ol.result-list .property-container.analysis {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ol.result-list .property-container.status {
+    justify-content: flex-end;
+}
+
+ol.result-list li.has_results .property-container.status {
+    margin-right: 1em;
+}
+
+ol.result-list li.has_results .property-container.status a {
+    justify-content: flex-end;
+    width: 9em;
+    text-align: center;
+}
+
+ol.result-list li:not(.has_results) .property-container.status p {
+    margin: 0;
+}
+
+
+ol.result-list li.has_results .property-container.analysis a {
+    justify-content: flex-end;
+    width: 9em;
+    text-align: center;
+}
+
+.result-list .child-list > li {
+    padding: 0;
+    margin: 0.5em 0 0 0;
+}

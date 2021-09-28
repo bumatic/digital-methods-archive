@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+
+{% block title %}{% if dataset.query %}Dataset: {{ dataset.get_label() }}{% else %}Dataset{% endif %}{% endblock %}
+{% block body_class %}plain-page result-page{% endblock %}
+
+{% block body %}
+{% include "result-details.html" %}
+{% endblock %}

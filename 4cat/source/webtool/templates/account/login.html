@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}Log in{% endblock %}
+{% block body_class %}login_page{% endblock %}
+
+{% block body %}
+    <article class="small">
+        <section class="login-form">
+            <h2><span>Log in</span></h2>
+                <p>Please log in to access {{ __tool_name }}. If you do not have an account, you can <a href="{{ url_for('request_access') }}">request one</a>.</p>
+                <p>You can also install your own 4CAT instance. See the <a href="https://github.com/digitalmethodsinitiative/4cat/wiki/Installing-4CAT">installation page on the GitHub wiki</a>.</p>
+                {% for notice in flashes %}
+                <p class="form-notice">{{notice}}</p>
+                {%  endfor %}
+                <form action="" method="POST">
+                    <div class="form-element">
+                        <label for="form-username">Name</label>
+                        <input type="text" name="username" id="form-username">
+                    </div>
+                    <div class="form-element">
+                        <label for="form-password">Password</label>
+                        <input type="password" name="password" id="form-password">
+                    </div>
+                    <div class="submit-container">
+                        <button>Log in</button>
+                    </div>
+                </form>
+            <footer class="form-footer">
+                <nav>
+                    <ul class="flat">
+                        <li><a href="{{ url_for('request_access') }}">Request access</a></li>
+                        <li><a href="{{ url_for('request_password') }}">Recover password</a></li>
+                        <li><a href="{{ url_for('show_page', page='data-policy') }}">Data policy</a></li>
+                    </ul>
+                </nav>
+            </footer>
+        </section>
+    </article>
+{% endblock %}
