@@ -1,0 +1,56 @@
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+dist: xenial
+sudo: required
+
+language: go
+go_import_path: github.com/src-d/sourced-ce
+go:
+  - 1.13.x
+env:
+  global:
+    - SOURCED_GITHUB_TOKEN=$GITHUB_TOKEN
+
+matrix:
+  fast_finish: true
+
+services:
+  - docker
+
+stages:
+  - name: tests
+  - name: release
+    if: tag IS present
+
+jobs:
+  include:
+    - stage: tests
+      name: 'Go Unit Tests'
+      script:
+        - make packages
+        - make test-coverage codecov
+
+    - stage: tests
+      name: 'Integration Tests Linux'
+      script:
+        # cannot use 'make test-integration' because 'make clean' fails with
+        # GO111MODULE, see https://github.com/golang/go/issues/31002
+        - make build
+        - make test-integration-no-build
+
+    - stage: release
+      name: 'Release to GitHub'
+      script:
+        - make packages
+      deploy:
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file_glob: true
+        file:
+          - build/*.tar.gz
+        skip_cleanup: true
+        on:
+          all_branches: true

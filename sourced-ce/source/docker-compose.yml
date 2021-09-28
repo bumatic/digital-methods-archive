@@ -1,0 +1,187 @@
+version: '3.4'
+
+x-superset-env: &superset-env
+  SYNC_MODE: ${GITBASE_SIVA}
+  ADMIN_LOGIN: admin
+  ADMIN_FIRST_NAME: admin
+  ADMIN_LAST_NAME: admin
+  ADMIN_EMAIL: admin@example.com
+  ADMIN_PASSWORD: admin
+  POSTGRES_DB: superset
+  POSTGRES_USER: superset
+  POSTGRES_PASSWORD: superset
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  GITBASE_DB: gitbase
+  GITBASE_USER: root
+  GITBASE_PASSWORD:
+  GITBASE_HOST: gitbase
+  GITBASE_PORT: 3306
+  METADATA_DB: metadata
+  METADATA_USER: metadata
+  METADATA_PASSWORD: metadata
+  METADATA_HOST: metadatadb
+  METADATA_PORT: 5432
+  BBLFSH_WEB_HOST: bblfsh-web
+  BBLFSH_WEB_PORT: 8080
+
+services:
+  bblfsh:
+    image: bblfsh/bblfshd:v2.15.0-drivers
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - 9432:9432
+
+  gitcollector:
+    image: srcd/gitcollector:v0.0.4
+    # wait for db
+    command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
+    environment:
+      GITHUB_ORGANIZATIONS: ${GITHUB_ORGANIZATIONS-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN-}
+      # use main db
+      GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
+      GITCOLLECTOR_NO_UPDATES: 'true'
+      GITCOLLECTOR_NO_FORKS: ${NO_FORKS-true}
+      LOG_LEVEL: ${LOG_LEVEL-info}
+    depends_on:
+      - postgres
+    volumes:
+      - type: ${GITBASE_VOLUME_TYPE}
+        source: ${GITBASE_VOLUME_SOURCE}
+        target: /library
+        consistency: delegated
+    deploy:
+      resources:
+        limits:
+          cpus: ${GITCOLLECTOR_LIMIT_CPU-0.0}
+
+  ghsync:
+    image: srcd/ghsync:v0.2.0
+    entrypoint: ['/bin/sh']
+    # wait for db to be created
+    # we need to use something like https://github.com/vishnubob/wait-for-it
+    # or implement wait in ghsync itself
+    command: ['-c', 'sleep 10s && ghsync migrate && ghsync shallow']
+    depends_on:
+      - metadatadb
+    environment:
+      GHSYNC_ORGS: ${GITHUB_ORGANIZATIONS-}
+      GHSYNC_TOKEN: ${GITHUB_TOKEN-}
+      GHSYNC_POSTGRES_DB: metadata
+      GHSYNC_POSTGRES_USER: metadata
+      GHSYNC_POSTGRES_PASSWORD: metadata
+      GHSYNC_POSTGRES_HOST: metadatadb
+      GHSYNC_POSTGRES_PORT: 5432
+      GHSYNC_NO_FORKS: ${NO_FORKS-true}
+      LOG_LEVEL: ${LOG_LEVEL-info}
+
+  gitbase:
+    image: srcd/gitbase:v0.23.1
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      BBLFSH_ENDPOINT: bblfsh:9432
+      SIVA: ${GITBASE_SIVA}
+      GITBASE_LOG_LEVEL: ${LOG_LEVEL-info}
+    depends_on:
+      - bblfsh
+    volumes:
+      - type: ${GITBASE_VOLUME_TYPE}
+        source: ${GITBASE_VOLUME_SOURCE}
+        target: /opt/repos
+        read_only: true
+        consistency: delegated
+      - gitbase_indexes:/var/lib/gitbase/index
+    deploy:
+      resources:
+        limits:
+          cpus: ${GITBASE_LIMIT_CPU-0.0}
+          memory: ${GITBASE_LIMIT_MEM-0}
+
+  bblfsh-web:
+    image: bblfsh/web:v0.11.4
+    restart: unless-stopped
+    command: -bblfsh-addr bblfsh:9432
+    ports:
+      - 9999:8080
+    depends_on:
+      - bblfsh
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL-info}
+
+  redis:
+    image: redis:5-alpine
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+  postgres:
+    image: postgres:10-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_USER: superset
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  metadatadb:
+    image: postgres:10-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: metadata
+      POSTGRES_PASSWORD: metadata
+      POSTGRES_USER: metadata
+    ports:
+      - 5433:5432
+    volumes:
+      - metadata:/var/lib/postgresql/data
+
+  sourced-ui:
+    image: srcd/sourced-ui:v0.8.1
+    restart: unless-stopped
+    environment:
+      <<: *superset-env
+      SUPERSET_ENV: production
+    ports:
+      - 8088:8088
+    depends_on:
+      - postgres
+      - metadatadb
+      - redis
+      - gitbase
+      - bblfsh-web
+
+  sourced-ui-celery:
+    image: srcd/sourced-ui:v0.8.1
+    restart: unless-stopped
+    environment:
+      <<: *superset-env
+      SUPERSET_ENV: celery
+    depends_on:
+      - postgres
+      - metadatadb
+      - redis
+      - gitbase
+      - sourced-ui
+
+volumes:
+  gitbase_repositories:
+    external: false
+  gitbase_indexes:
+    external: false
+  metadata:
+    external: false
+  postgres:
+    external: false
+  redis:
+    external: false
