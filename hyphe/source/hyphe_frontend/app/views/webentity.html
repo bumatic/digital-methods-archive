@@ -1,0 +1,554 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: auto;"
+      >
+        
+        <!-- Content -->
+        <div layout-fill layout="column">
+
+          <div class="page-header">
+            <h1 class="word-break">
+              {{webentity.name || 'loading'}}
+            </h1>
+            <span class="md-subhead">
+              Explore and edit this <span hyphe-glossary="web entity"></span>.
+            </span>
+          </div>
+
+          <div flex layout="row">
+            <div layout="column" flex="50">
+              <md-tabs md-border-bottom flex md-selected="selectedTab">
+            
+                <!-- Tab: Identity -->
+                <md-tab label="Identity">
+                  <div layout-fill md-colors="{'background': 'default-background-200'}" style="overflow-y: auto">
+                    <div layout="column">
+
+                      <!-- Info -->
+                      <div
+                        ng-if="!identityEditMode"
+                        style="padding: 8px"
+                        md-colors="{'background': 'default-background-200'}"
+                        layout="column"
+                      >
+                        <dl class="key-value-pairs">
+
+                          <dt>ID</dt>
+                          <dd>{{webentity.id}}</dd>
+
+                          <dt>Name</dt>
+                          <dd>{{webentity.name || '...'}}</dd>
+
+                          <dt>Status</dt>
+                          <dd>{{webentity.status || '...'}}</dd>
+
+                          <dt>Home page</dt>
+                          <dd>
+                            <a href="{{webentity.homepage}}" target="_blank" title="Open in a new tab">
+                              <md-tooltip md-direction="left">Open homepage in a new tab</md-tooltip>
+                              <md-icon>link</md-icon>
+                            </a>
+                            {{webentity.homepage}}
+                          </dd>
+
+                        </dl>
+
+                        <div layout="row" layout-align="center">
+                          <md-button class="md-raised" ng-click="enableEditMode()" ng-disabled="webentity.loading">Edit</md-button>
+                        </div>
+                      </div>
+
+                      <!-- Edit -->
+                      <form  layout="column" ng-if="identityEditMode" style="padding: 8px" md-colors="{'background': 'default-background-50'}">
+                        <md-input-container>
+                          <label>Name</label>
+                          <input ng-model="$parent.webentityEdit_name">
+                        </md-input-container>
+                        <md-input-container>
+                          <label>Status</label>
+                          <md-select ng-model="$parent.webentityEdit_status">
+                            <md-option value="IN">IN</md-option>
+                            <md-option value="UNDECIDED">UNDECIDED</md-option>
+                            <md-option value="OUT">OUT</md-option>
+                          </md-select>
+                        </md-input-container>
+                        <md-input-container>
+                          <label>Homepage</label>
+                          <input ng-model="$parent.webentityEdit_homepage">
+                          <div class="hint" md-colors="{'color': 'default-warn'}">{{homepageErrorMessage}}</div>
+                        </md-input-container>
+                        <div layout="row" style="padding-bottom: 8px" layout-align="center">
+                          <md-button type="submit" class="md-raised md-primary" ng-click="saveWebEntity()" ng-disabled="identityEditLoading">Save changes</md-button>
+                          <md-button class="" ng-click="disableEditMode()" ng-disabled="identityEditLoading">Cancel</md-button>
+                        </div>
+                      </form>
+
+                      <!-- Other info -->
+                      <div style="padding: 8px; margin-top: 16px" md-colors="{'background': 'default-background-200'}">
+                        <dl class="key-value-pairs">
+
+                          <dt>Linked to</dt>
+                          <dd>{{webentity.undirected_degree | no}} other entit{{webentity.undirected_degree | y_ies}}</dd>
+
+                          <dt>Cited by</dt>
+                          <dd>{{webentity.indegree | no}} other entit{{webentity.indegree | y_ies}}</dd>
+
+                          <div ng-show="webentity.crawled">
+                            <dt>Citing</dt>
+                            <dd>{{webentity.outdegree | no}} other entit{{webentity.outdegree | y_ies}}</dd>
+                          </div>
+                          
+                          <dt>Created {{webentity['creation_date']|prettyDate}}</dt>
+                          <dd>{{webentity['creation_date']|date}}</dd>
+                          
+                          <dt>Last modified {{webentity['last_modification_date']|prettyDate}}</dt>
+                          <dd>{{webentity['last_modification_date']|date}}</dd>
+                          
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                </md-tab>
+
+                <!-- Tab: Prefixes -->
+                <md-tab label="Prefixes">
+                  <md-virtual-repeat-container layout-fill>
+                    <md-list>
+                      <md-list-item
+                        md-virtual-repeat="lru in webentity.prefixes"
+                      >
+                        <span md-truncate flex>
+                          <a href="{{lru|lru_to_url}}" target="_blank" title="Open in a new tab">
+                            <md-tooltip md-direction="left">Open in a new tab</md-tooltip>
+                            <md-icon>link</md-icon>
+                          </a>
+                          {{lru|lru_to_url}}
+                        </span>
+                        <!-- <md-icon ng-click="" aria-label="Close" class="md-secondary">close</md-icon> -->
+                      </md-list-item>
+                    </md-list>
+                  </md-virtual-repeat-container>
+                </md-tab>
+
+                <!-- Tab: Start pages -->
+                <md-tab label="Start pages">
+                  
+                    <md-list>
+                      <div
+                        ng-repeat="startpagetype in [
+                          {id: 'user', name: 'Manual'},
+                          {id: 'auto', name: 'Automatic'}
+                        ]"
+                      >
+                        <md-subheader class="md-primary" ng-show="webentity.tags['CORE-STARTPAGES'][startpagetype.id].length">
+                          {{startpagetype.name}} start page{{webentity.tags['CORE-STARTPAGES'][startpagetype.id].length | plural}}
+                        </md-subheader>
+                        <md-list-item
+                          ng-repeat="url in webentity.tags['CORE-STARTPAGES'][startpagetype.id]"
+                        >
+                          <span md-truncate flex>
+                            <a href="{{url}}" target="_blank" title="Open in a new tab">
+                              <md-tooltip md-direction="left">Open in a new tab</md-tooltip>
+                              <md-icon>link</md-icon>
+                            </a>
+                            <span>
+                              <md-tooltip md-direction="bottom">{{url}}</md-tooltip>
+                              {{url}}
+                            </span>
+                          </span>
+                        </md-list-item>
+                      </div>
+                    </md-list>
+                  
+                    <div ng-show="webentity.startpages.length > 0" layout="column" layout-align="center">
+                      <md-button
+                        class="md-raised"
+                        ng-disabled="editingStartpages"
+                        ng-click="removeAllStartPages()"
+                      >
+                        <md-icon>clear</md-icon>
+                        REMOVE ALL STARTPAGES
+                      </md-button>
+                    </div>
+
+                    <div ng-show="webentity.pages_total - webentity.startpages.length > 0" layout="column" layout-align="center">
+                      <md-button
+                        class="md-raised"
+                        ng-disabled="editingStartpages || webentity.pages_total - webentity.startpages.length > 250"
+                        ng-click="addAllStartPages()"
+                      >
+                        <md-icon>add_circle_outline</md-icon>
+                        {{ webentity.pages_total - webentity.startpages.length > 250 ? "TOO MANY PAGES TO SET THEM ALL AS STARTPAGES" : "SET ALL KNOWN PAGES AS STARTPAGES" }}
+                      </md-button>
+                    </div>
+                  
+                </md-tab>
+
+                <!-- Tab: Ego Network -->
+                <md-tab>
+                  <md-tab-label>
+                    <md-tooltip md-direction="up">The network of links between the web entities that are linked with this one</md-tooltip>
+                    <md-icon>bubble_chart</md-icon>Ego network</md-tab-label>
+                  <md-tab-body>
+                    <div layout-fill layout="column" layout-align="center center" ng-if="!ego.loaded">
+                      <spinner text="'LOADING LINKS'"></spinner>
+                    </div>
+                    <div layout-fill layout="column" ng-if="ego.loaded" style="position: relative">
+                      <sigma-network
+                          layout-fill
+                          network="ego.network "
+                          download-network="downloadNetwork"
+                          on-node-click="networkNodeClick"
+                      ></sigma-network>
+                    </div>
+                  </md-tab-body>
+                </md-tab>
+
+                <!-- Tab: Crawls -->
+                <md-tab label="Crawls">
+                  <!-- <div
+                    style="padding: 8px"
+                    md-colors="{'background': 'default-background-200'}"
+                    layout="column"
+                  >
+                    <dl class="key-value-pairs">
+
+                      <dt>Crawled</dt>
+                      <dd>{{webentity.crawled}}</dd>
+
+                      <dt>Harvesting</dt>
+                      <dd>{{webentity['crawling_status']}}</dd>
+
+                      <dt>Indexing</dt>
+                      <dd>{{webentity['indexing_status']}}</dd>
+
+                    </dl>
+                  </div> -->
+
+                  <div ng-if="crawls.length == 0" layout="column" layout-align="center">
+                    <md-button
+                      class="md-raised md-primary"
+                      ng-click="reCrawl()"
+                    >
+                      <md-icon>opacity</md-icon>
+                      CRAWL
+                    </md-button>
+                  </div>
+
+                  <div ng-if="crawls.length > 0" style="padding: 8px">
+                    <md-grid-list
+                      md-cols-xs="1"
+                      md-cols-sm="1"
+                      md-cols-md="1"
+                      md-cols-gt-md="2"
+                      md-gutter="8px"
+                      md-row-height="1:1"
+                    >
+                      <md-grid-tile
+                        ng-repeat="job in crawls track by $index"
+                        class=""
+                      >
+                        <div
+                          layout="column"
+                          layout-align="center center"
+                          layout-fill
+                          md-colors="{
+                            'background': (job.globalStatus == 'CRASHED' || job.globalStatus == 'UNSUCCESSFUL')
+                              ? ('default-warn-200')
+                              : (
+                                (job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')
+                                ? ('default-primary-500')
+                                : (
+                                  (job.globalStatus == 'ACHIEVED')
+                                  ? ('default-background-200')
+                                  : (
+                                    (job.globalStatus == 'RETRIED')
+                                    ? ('default-primary-200')
+                                    : (
+                                      (job.globalStatus == 'CANCELED')
+                                      ? ('default-background-400')
+                                      : ('default-background-100')
+                                    )
+                                  )
+                                )
+                              )
+                          }"
+                        >
+                          <div
+                            water-loader
+                            message="job.globalStatus"
+                            message-only="!(job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')"
+                            cog="job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING'"
+                          ></div>
+                        </div>
+                        <div
+                          class="crawl-tile-overlay"
+                          layout="column"
+                          layout-fill
+                          style="padding: 8px"
+                          md-colors="{
+                            'color': (job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')
+                              ? ('default-primary-50')
+                              : ('default-background-700')
+                          }"
+                        >
+                          <div flex layout="row">
+                            <div flex layout="column">
+                              <p class="title">
+                                {{webentity.name}}
+                              </p>
+                              <p class="subtitle">
+                                Scheduled <span tooltip="{{job.created_at|date}}">{{job.created_at|prettyDate}}</span>
+                              </p>
+                              <p ng-if="job.finished_at" class="subtitle">
+                                Finished in {{job.finished_at - job.created_at|duration}}
+                              </p>
+                              <p class="subtitle" ng-if="job.crawl_arguments.phantom">
+                                <md-icon>find_in_page</md-icon> Cautious crawl
+                              </p>
+                              <p class="subtitle">
+                                <md-icon style="display: revert; font-size: 1em" class="material-icons" role="img" aria-label="history">ads_click</md-icon>
+                                Depth {{job.crawl_arguments.max_depth}}
+                              </p>
+                            </div>
+                            <div layout="column" style="width: 120px">
+                              <md-button
+                                class="md-raised md-mini"
+                                ng-click="crawlDetails(job)"
+                              >
+                                <md-icon>info</md-icon>
+                                DETAILS
+                              </md-button>
+
+                              <md-button
+                                class="md-raised md-mini"
+                                ng-show="job.globalStatus == 'ACHIEVED' || job.globalStatus == 'UNSUCCESSFUL' || job.globalStatus == 'CANCELED'"
+                                ng-click="reCrawl(job)"
+                              >
+                                <md-icon>autorenew</md-icon>
+                                RECRAWL
+                              </md-button>
+
+                              <md-button
+                                class="md-raised md-mini"
+                                ng-show="job.globalStatus != 'ACHIEVED' && job.globalStatus != 'UNSUCCESSFUL' && job.globalStatus != 'CANCELED'"
+                                ng-click="abortCrawl(job)"
+                              >
+                                <md-icon>clear</md-icon>
+                                ABORT
+                              </md-button>
+                            </div>
+                          </div>
+                          <div layout="column" layout-align="center center" class="stats">
+                            <div>
+                              {{job.nb_crawled_pages}} page{{job.nb_crawled_pages | plural}} crawled
+                            </div>
+                            <div ng-show="job.nb_unindexed_pages">
+                              ({{job.nb_unindexed_pages}} not indexed yet)
+                            </div>
+                            <div ng-show="job.crawl_arguments.webarchives.option" class="subtitle">
+                              <md-tooltip md-direction="bottom">{{ job.crawl_arguments.webarchives.days_range / 2 }} days before &amp; after{{ job.crawl_arguments.webarchives.date }}</md-tooltip>
+                              <md-icon style="font-size: 1.5em">history</md-icon> from {{job.crawl_arguments.webarchives.option}}
+                            </div>
+                          </div>
+                        </div>
+
+                      </md-grid-tile>
+                    </md-grid-list>
+                  </div>
+                </md-tab>
+
+                <!-- Tab: Tags -->
+                <md-tab>
+                  <md-tab-label><md-icon>local_offer</md-icon> Tags</md-tab-label>
+                  <md-tab-body>
+                    <div layout-fill layout="column">
+                      <div flex style="overflow-y: auto">
+                        <div layout="column" style="padding: 8px">
+                          
+                          <!-- Tag categories -->
+                          <div ng-repeat="tagCat in tagCategories | toSortedKeysArray" ng-if="tagCat != 'FREETAGS'" class="category-{{tagCat | slugify}}">
+                            <div class="md-title">{{tagCat}}</div>
+                            <md-chips
+                              ng-model="tagCategories[tagCat]"
+                              readonly="tagsPendingQueries>0 || (tagCategories[tagCat] && tagCategories[tagCat].length > 0)"
+                              md-removable="tagsPendingQueries <= 0"
+                              md-max-chips="1"
+                            >
+                              <md-autocomplete
+                                md-selected-item="selectedItem"
+                                md-search-text="searchText"
+                                md-items="tag in autoComplete(searchText, tagCat)"
+                                md-item-text="tag"
+                                md-min-length=0
+                                placeholder="Set tag"
+                              >
+                                <span md-highlight-text="searchText">{{tag}}</span>
+                              </md-autocomplete>
+                            </md-chips>
+                            <br>
+                          </div>
+
+                          <div
+                            layout="row"
+                            md-colors="{'background': 'default-background-100'}"
+                            style="padding: 8px"
+                          >
+                            <md-input-container flex>
+                              <label>New category</label>
+                              <input ng-model="newCategory" ng-press-enter="saveNewCategory()">
+                            </md-input-container>
+                            <md-button class="md-primary" ng-click="saveNewCategory()">Add</md-button>
+                          </div>
+
+                          <br>
+                          <br>
+
+                          <!-- Free tags -->
+                          <div class="fieldnotes"
+                            md-colors="{'background': 'default-background-300'}"
+                            style="padding: 8px; margin-top: 16px"
+                          >
+                          <div class="md-title">Field notes</div>
+                          <md-chips
+                            ng-model="tagCategories.FREETAGS"
+                            readonly="tagsPendingQueries>0"
+                            md-removable="tagsPendingQueries<=0"
+                          >
+                            <md-autocomplete
+                              md-selected-item="selectedItem"
+                              md-search-text="searchText"
+                              md-items="t in []"
+                              md-item-text="note"
+                              placeholder="Add note..."
+                            >
+                              <span md-highlight-text="searchText">{{tag}}</span>
+                            </md-autocomplete>
+                          </md-chips>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </md-tab-body>
+                </md-tab>
+
+              </md-tabs>
+            </div>
+            <div layout="column" flex="50" md-colors="{'background':'default-background-100'}">
+              <div
+                layout="row"
+                style="height: 48px;"
+              >
+                <h3 style="padding: 8px; margin: 0px" ng-if="webentity.pages_total<=0">No known page</h3>
+                <h3 style="padding: 8px; margin: 0px" ng-if="webentity.pages_total>=1">
+                  {{webentity.pages_total|number}} Page{{webentity.pages_total|plural}}
+                  <small ng-if="webentity.pages_crawled>0">({{webentity.pages_crawled|number}} crawled)</small>
+                </h3>
+                <div flex></div>
+                <!-- <md-button class="md-raised" disabled="true">
+                  <md-icon>equalizer</md-icon>
+                  Most cited
+                </md-button> -->
+                <md-button class="md-raised" ng-href="#/project/{{corpusId}}/webentityExplorer/{{webentity.id}}">
+                  <md-icon>folder</md-icon>
+                  as folders
+                </md-button>
+                <md-button class="md-raised" ng-href="#/project/{{corpusId}}/webentityPagesNetwork/{{webentity.id}}">
+                  <md-icon>bubble_chart</md-icon>
+                  network
+                </md-button>
+              </div>
+ 
+              <div style="height: 64px; padding: 0px 8px" layout="column" ng-show="webentity.pages_total>=10">
+                <md-input-container style="margin-bottom: 0;">
+                  <label>NOT a full text search</label>
+                  <md-icon>search</md-icon>
+                  <input
+                    ng-model="urlSearchQuery"
+                  >
+                </md-input-container>
+
+                <md-button class="md-raised md-mini md-fab md-secondary" style="position: absolute; right: 16px; top: 225px; background-color: lightgrey" ng-click="pagesOnlyCrawled = !pagesOnlyCrawled">
+                  <md-tooltip md-direction="left">Display only crawled pages</md-tooltip>
+                  <md-icon ng-style="{'opacity': pagesOnlyCrawled ? 0.2 : 1}">opacity</md-icon>
+                </md-button>
+              </div>
+
+              
+              <div flex ng-if="pagesLoading && !pagesToken" layout="column" layout-align="center center">
+                <spinner></spinner>
+              </div>
+
+              <div flex ng-show="!pagesLoading || pagesToken" style="margin-top: 15px">
+                <md-virtual-repeat-container layout-fill>
+                  <md-list>
+                    <md-list-item
+                      md-virtual-repeat="page in pages | filter:urlSearchQuery:false:url | filterBoolFieldWhenActive:pagesOnlyCrawled:'crawled'"
+                    >
+                      <div class="md-primary">
+                        <a href="{{ page.url }}" target="_blank">
+                          <md-tooltip md-direction="left">Open in a new tab</md-tooltip>
+                          <md-icon>link</md-icon>
+                        </a>
+                        <a ng-if="page.archive_url && page.archive_date_obtained" href="{{ page.archive_url }}" target="_blank">
+                          <md-tooltip md-direction="left">Open in a new tab archived page from {{ page.archive_date_obtained }}</md-tooltip>
+                          <md-icon>history</md-icon>
+                        </a>
+                        <span ng-if="page.archive_date_requested && !page.archive_date_obtained">
+                          <md-tooltip md-direction="left">This page could not be found in web archives around {{ page.archive_date_requested }}</md-tooltip>
+                          <md-icon style="opacity: 0.2">history</md-icon>
+                        </a>
+                      </div>
+                      <div ng-if="page.url === webentity.homepage">
+                        <md-tooltip md-direction="left">Homepage</md-tooltip>
+                        &nbsp;<md-icon>home</md-icon>
+                      </div>
+                      <div md-truncate flex>
+                        <span>
+                          <md-tooltip md-direction="bottom">{{ page.url }}</md-tooltip>
+                          &nbsp;{{ page.url }}
+                        </span>
+                      </div>
+                      <div class="md-primary">
+                        <md-switch ng-if="true" md-no-ink="" aria-label="Set as StartPage" ng-model="page.isStartPage" ng-change="toggleStartPages(page)" ng-disabled="editingStartpages"></md-switch>
+                        <md-tooltip md-direction="left">Set as StartPage</md-tooltip>
+                      </div>
+                      <div class="md-secondary" ng-if="page.crawled">
+                        <md-tooltip md-direction="left">Crawled</md-tooltip>
+                        <md-icon>opacity</md-icon>
+                      </div>
+                      <div class="md-secondary" ng-if="!page.crawled">
+                        <md-tooltip md-direction="left">Not crawled</md-tooltip>
+                        <md-icon style="opacity: 0.2">opacity</md-icon>
+                      </div>
+                    </md-list-item>
+                    <md-list-item ng-show="pagesToken">
+                      <div flex layout="row" layout-align="center center" class="pagination-button">
+                        <spinner ng-if="pagesLoading" style="margin-top: -15px"></spinner>
+                        <md-button class="md-raised" ng-show="!pagesLoading" ng-click="loadPages()" style="margin: 5px 20px 20px 0px">
+                          {{ pages.length | number }} pages loaded, click to load more
+                        </md-button>
+                        <md-checkbox class="md-primary" ng-model="loadAllPages" ng-show="!pagesLoading" title="Warning: this can take a while">
+                          LOAD ALL
+                        </md-checkbox>
+                      </div>
+                    </md-list-item>
+                  </md-list>
+                </md-virtual-repeat-container>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,439 @@
+<!-- Content -->
+<div
+  layout-fill
+  style="position: relative"
+>
+  <md-button
+    class="md-fab md-primary"
+    aria-label="Open network settings"
+    style="position: absolute; right: 16px; top: 16px;"
+    ng-click="toggleSidenav()"
+  >
+    <md-tooltip md-direction="left">Network Viz Settings</md-tooltip>
+    <md-icon>layers</md-icon>
+  </md-button>
+  
+  <div layout="column" layout-fill style="padding: 8px" ng-if="loading">
+    <div style="margin-bottom: 8px">
+      <em>Please wait while network data is loading</em>
+    </div>
+
+    <!-- IN -->
+    <div ng-if="settings.in" style="height: 50px" layout="row" layout-align="start center">
+      <div style="margin-right: 8px; width: 50px">
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="indeterminate"
+          ng-if="data.in.loading && !data.in.total"
+        ></md-progress-circular>
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.in.loading && data.in.total"
+          value="{{100 * data.in.webentities.length / data.in.total}}"
+        ></md-progress-circular>
+        <md-progress-circular
+          style="opacity: 0.5"
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.in.loaded"
+          value="100"
+        ></md-progress-circular>
+      </div>
+      <div>
+        IN
+        <span
+          md-colors="{'color': 'default-primary'}"
+          ng-if="data.in.total"
+        >{{data.in.webentities.length}} / {{data.in.total}}</span>
+      </div>
+    </div>
+
+    <!-- UNDECIDED -->
+    <div ng-if="settings.undecided" style="height: 50px" layout="row" layout-align="start center">
+      <div style="margin-right: 8px; width: 50px">
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="indeterminate"
+          ng-if="data.undecided.loading && !data.undecided.total"
+        ></md-progress-circular>
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.undecided.loading && data.undecided.total"
+          value="{{100 * data.undecided.webentities.length / data.undecided.total}}"
+        ></md-progress-circular>
+        <md-progress-circular
+          style="opacity: 0.5"
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.undecided.loaded"
+          value="100"
+        ></md-progress-circular>
+      </div>
+      <div>
+        UNDECIDED
+        <span
+          md-colors="{'color': 'default-primary'}"
+          ng-if="data.undecided.total"
+        >{{data.undecided.webentities.length}} / {{data.undecided.total}}</span>
+      </div>
+    </div>
+
+    <!-- OUT -->
+    <div ng-if="settings.out" style="height: 50px" layout="row" layout-align="start center">
+      <div style="margin-right: 8px; width: 50px">
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="indeterminate"
+          ng-if="data.out.loading && !data.out.total"
+        ></md-progress-circular>
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.out.loading && data.out.total"
+          value="{{100 * data.out.webentities.length / data.out.total}}"
+        ></md-progress-circular>
+        <md-progress-circular
+          style="opacity: 0.5"
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.out.loaded"
+          value="100"
+        ></md-progress-circular>
+      </div>
+      <div>
+        OUT
+        <span
+          md-colors="{'color': 'default-primary'}"
+          ng-if="data.out.total"
+        >{{data.out.webentities.length}} / {{data.out.total}}</span>
+      </div>
+    </div>
+
+    <!-- DISCOVERED -->
+    <div ng-if="settings.discovered" style="height: 50px" layout="row" layout-align="start center">
+      <div style="margin-right: 8px; width: 50px">
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="indeterminate"
+          ng-if="data.discovered.loading && !data.discovered.total"
+        ></md-progress-circular>
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.discovered.loading && data.discovered.total"
+          value="{{100 * data.discovered.webentities.length / data.discovered.total}}"
+        ></md-progress-circular>
+        <md-progress-circular
+          style="opacity: 0.5"
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.discovered.loaded"
+          value="100"
+        ></md-progress-circular>
+      </div>
+      <div>
+        DISCOVERED
+        <span
+          md-colors="{'color': 'default-primary'}"
+          ng-if="data.discovered.total"
+        >{{data.discovered.webentities.length}} / {{data.discovered.total}}</span>
+      </div>
+    </div>
+
+    <!-- LINKS -->
+    <div style="height: 50px" layout="row" layout-align="start center">
+      <div style="margin-right: 8px; width: 50px">
+        <md-progress-circular
+          md-diameter="42"
+          md-mode="indeterminate"
+          ng-if="data.links.loading"
+        ></md-progress-circular>
+        <md-progress-circular
+          style="opacity: 0.5"
+          md-diameter="42"
+          md-mode="determinate"
+          ng-if="data.links.loaded"
+          value="100"
+        ></md-progress-circular>
+      </div>
+      <div>
+        LINKS
+      </div>
+    </div>
+  </div>
+
+  <sigma-network
+    layout-fill
+    ng-if="!loading"
+    network="network"
+    download-network="downloadNetwork"
+    on-node-click="networkNodeClick"
+    on-stage-click="networkStageClick"
+  >
+  </sigma-network>
+
+
+<!-- Side Nav -->
+<md-sidenav
+  class="md-sidenav-right network-sidebar"
+  md-component-id="right"
+  md-disable-backdrop
+  md-whiteframe="4"
+  md-is-open="true"
+>
+
+  <md-toolbar class="md-primary">
+    <div class="md-toolbar-tools">
+      <h2 md-truncate flex>Network Viz Settings</h2>
+
+      <md-button
+        class="md-icon-button"
+        ng-click="toggleSidenav()"
+      ><md-icon>close</md-icon></md-button>
+    </div>
+    
+  </md-toolbar>
+
+  <md-content>
+
+    <div layout="row" md-colors="{'background': 'default-background-200-0.5'}">
+      <md-icon style="margin-left:10px; margin-right:10px">search</md-icon>
+      <md-autocomplete
+              md-item-text="WE"
+              md-items="WE in autoComplete(query)"
+              md-min-length=0
+              md-search-text="query"
+              md-selected-item="selectedItem"
+              md-floating-label="Search a WebEntity"
+              md-selected-item-change="findNode(selectedItem)"
+              md-clear-button="true"
+              class="network-search"
+      >
+        <md-item-template>
+          <span md-highlight-text="query">{{WE}}</span>
+        </md-item-template>
+      </md-autocomplete>
+    </div>
+
+    <div
+      layout="column"
+      md-colors="{'background': 'default-background-200'}"
+      style="padding: 8px"
+      ng-show="!selectedItem"
+    >
+      <p class="md-title">Filtering</p>
+      <hyphe-status-box
+        statuses="statuses"
+        counts="counts"
+        change="touchSettings()"
+        vertical="true"
+      ></hyphe-status-box>
+
+      <md-input-container ng-show="statuses.discovered">
+        <label>Filter DISCOVERED web entities</label>
+        <md-select ng-model="limitDiscovered">
+          <md-option value=""><em>No filtering</em></md-option>
+          <md-option value="1+">Display only connected DISCOVERED</md-option>
+          <md-option value="2+">Display only DISCOVERED with 2+ links</md-option>
+          <md-option value="3+">Display only DISCOVERED with 3+ links</md-option>
+          <md-option value="4+">Display only DISCOVERED with 4+ links</md-option>
+          <md-option value="5+">Display only DISCOVERED with 5+ links</md-option>
+        </md-select>
+      </md-input-container>
+
+      <md-input-container>
+        <label>Filter ALL web entities</label>
+        <md-select ng-model="limitAll">
+          <md-option value=""><em>No filtering</em></md-option>
+          <md-option value="1+">Display only connected web entities</md-option>
+          <md-option value="2+">Display only web entities with 2+ links</md-option>
+          <md-option value="3+">Display only web entities with 3+ links</md-option>
+          <md-option value="4+">Display only web entities with 4+ links</md-option>
+          <md-option value="5+">Display only web entities with 5+ links</md-option>
+        </md-select>
+      </md-input-container>
+
+      <md-checkbox class="hide-out" ng-model="hideLinksFromOUT" aria-label="Hide links coming from OUT webentities" ng-show="statuses.out" ng-change="touchSettings()">
+        <label>Hide links coming from OUT</label>
+      </md-checkbox>
+
+      <div layout="row">
+        <!-- Validation -->
+        <md-button
+          class="md-raised md-primary"
+          ng-click="applySettings()"
+          ng-disabled="!settingsChanged"
+        >
+          APPLY CHANGES
+        </md-button>
+        <md-button
+          ng-click="revertSettings()"
+          ng-disabled="!settingsChanged"
+        >
+          CANCEL
+        </md-button>
+      </div>
+    </div>
+
+    <div
+            layout="column"
+            md-colors="{'background': 'default-background-200'}"
+            style="padding: 12px"
+            ng-show="selectedItem"
+    >
+      <p class="md-title">Selected Web Entity:</p>
+
+      <p class="webentity-link" flex layout="row">
+        <a
+            ng-show="WEHomepage"
+            href="{{WEHomepage}}"
+            target="_blank"
+            ng-click="$event.stopPropagation();"
+            style="margin-right: 2px"
+        >
+          <md-tooltip md-direction="left">{{WEHomepage}}</md-tooltip>
+          <md-icon>link</md-icon>
+          <span md-truncate flex>{{selectedItem}}</span>
+        </a>
+        <span style="height: 25px" ng-show="!WEHomepage" md-truncate flex>{{selectedItem}}</span>
+      </p>
+
+      <div layout="row" >
+        <md-button class="md-raised"
+                   flex
+                   target="_blank"
+                   ng-href="#/project/{{corpusId}}/webentity/{{WEId}}"
+                   ng-click="$event.stopPropagation();"
+                   ng-disabled="!selectedItem">
+          <md-tooltip md-direction="up">Edit this Web Entity</md-tooltip>
+          EDIT &nbsp;
+        </md-button>
+      </div>
+
+      <div layout="column" style="margin: 8px">
+        <div>
+          <md-icon style="transform: rotate(-30deg); color: #0053c2; font-size: 40px" role="img" aria-label="remove">remove</md-icon>
+          &nbsp; &nbsp; <span>{{inDegree}}</span> IN LINKS
+        </div>
+        <div>
+          <md-icon style="transform: rotate(-30deg); color: #f3419c; font-size: 40px" role="img" aria-label="remove">remove</md-icon>
+          &nbsp; &nbsp; <span>{{outDegree}}</span> OUT LINKS
+        </div>
+        <div>
+          <md-icon style="transform: rotate(-30deg); color: #6e246c
+; font-size: 40px" role="img" aria-label="remove">remove</md-icon>
+          &nbsp; &nbsp; <span>{{bothDegree}}</span> SYMMETRIC LINKS
+        </div>
+      </div>
+
+    </div>
+    <div
+      style="padding: 8px"
+      layout="column"
+    >
+      <p class="md-title">Key</p>
+
+      <div layout="row" style="padding-bottom: 32px">
+        <div style="width: 48px" layout="column" layout-align="center center">
+          <md-icon>fiber_manual_record</md-icon>
+        </div>
+        <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+          <div class="network-key-text">
+            Each dot or <em>node</em> is a <span hyphe-glossary="web entity"></span>
+          </div>
+        </div>
+      </div>
+
+      <div layout="row" style="padding-bottom: 32px">
+        <div style="width: 48px" layout="column" layout-align="center center">
+          <md-icon style="transform: rotate(-30deg)">remove</md-icon>
+        </div>
+        <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+          <div class="network-key-text">
+            Each line or <em>edge</em> or <em>link</em> represents one or more <span hyphe-glossary="hyperlinks"></span> from a web entity to another.
+            <br>
+            Links are oriented even though it is not figured in the image.
+          </div>
+        </div>
+      </div>
+
+      <div layout="column" ng-if="network">
+
+        <md-input-container>
+          <label>NODE COLOR</label>
+          <md-select ng-model="$parent.nodeColorMode">
+            <md-option value=""><em>No color</em></md-option>
+            <md-option value="_webentitystatus">Web entity status</md-option>
+            <md-option value="{{tagCat}}" ng-repeat="(tagCat, tagValues) in tagCategories" ng-show="tagCat != 'FREETAGS'">{{tagCat}} (tag)</md-option>
+          </md-select>
+        </md-input-container>
+
+        <div layout="row" style="padding-bottom: 16px" ng-repeat="item in nodeColorMap">
+          <div style="width: 48px" layout="column" layout-align="center center">
+            <md-icon ng-style="{'color':item.color}">fiber_manual_record</md-icon>
+          </div>
+          <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+            <div class="network-key-text">
+              {{item.name}}
+              <span ng-show="item.count">({{item.count}})</span>
+            </div>
+          </div>
+        </div>
+
+        <div layout="row">
+          <md-input-container flex>
+            <label>NODE SIZE</label>
+            <md-select ng-model="$parent.nodeSizeMode">
+              <md-option value="degree">Degree</md-option>
+              <md-option value="indegree">Indegree</md-option>
+              <md-option value="outdegree">Outdegree</md-option>
+              <md-option value="pages_total">Known pages</md-option>
+              <md-option value="pages_crawled">Crawled pages</md-option>
+            </md-select>
+          </md-input-container>
+          <div layout="row" layout-align="center center">
+            <md-button class="md-icon-button" style="margin: 0px" ng-click="$parent.nodeSizeBaseRatio = 1.2 * $parent.nodeSizeBaseRatio">
+              <md-icon>add_circle_outline</md-icon>
+              <md-tooltip md-direction="top">Bigger nodes</md-tooltip>
+            </md-button>
+            <md-button class="md-icon-button" style="margin: 0px" ng-click="$parent.nodeSizeBaseRatio = 0.8 * $parent.nodeSizeBaseRatio">
+              <md-icon>remove_circle_outline</md-icon>
+              <md-tooltip md-direction="top">Smaller nodes</md-tooltip>
+            </md-button>
+          </div>
+        </div>
+
+        <div class="network-key-text" ng-if="nodeSizeMode == 'degree'" style="padding-bottom: 16px">
+          <em>The DEGREE of a web entity is the number of other web entities it cites plus the number of other web entities citing it.</em>
+        </div>
+
+        <div class="network-key-text" ng-if="nodeSizeMode == 'indegree'" style="padding-bottom: 16px">
+          <em>The INDEGREE of a web entity is the number of other web entities citing it.</em>
+        </div>
+
+        <div class="network-key-text" ng-if="nodeSizeMode == 'outdegree'" style="padding-bottom: 16px">
+          <em>The OUTDEGREE of a web entity is the number of other web entities it cites.</em>
+        </div>
+
+        <div layout="row" style="padding-bottom: 16px" ng-repeat="item in nodeSizeMap">
+          <div style="width: 48px" layout="column" layout-align="center center">
+            <md-icon ng-style="{'transform':'scale('+item.size+')'}">fiber_manual_record</md-icon>
+          </div>
+          <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+            <div class="network-key-text">
+              {{item.name}}
+              <br>
+              {{nodeSizeMode|uppercase}} of
+              <span>{{item.value}}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+  </md-content>
+
+</md-sidenav>

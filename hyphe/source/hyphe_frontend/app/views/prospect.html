@@ -1,0 +1,354 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: auto;"
+      >
+        
+        <!-- Content -->
+        <div layout-fill layout="column">
+          <div class="page-header">
+            <h1>
+              PROSPECT
+              <span
+                ng-if="dynamicWebentities && dynamicWebentities.numItems > 0"
+                md-colors="{'color':'default-primary'}"
+                style="font-size: 0.8em"
+              >
+                {{dynamicWebentities.numItems|number}} DISCOVERED
+              </span>
+            </h1>
+          </div>
+
+          <div layout="row" flex>
+            <div layout="column" flex="70">
+              
+              <!-- Filtering -->
+              <div layout="column">
+                <div
+                  style="padding: 8px; margin: 8px"
+                  layout="row"
+                  md-colors="{'background':'default-background-200'}"
+                >
+
+                  <div layout="column" flex="50">
+
+                    <!-- Search -->
+                    <md-input-container flex style="margin-bottom: 0px">
+                      <label>Search</label>
+                      <md-icon>search</md-icon>
+                      <input
+                        ng-model="query"
+                        ng-change="touchSettings()"
+                        ng-press-enter="applySettings()"
+                        ng-disabled="dynamicWebentities.loading"
+                      >
+                    </md-input-container>
+                    <div layout="row">
+                      <!-- Validation -->
+                      <md-button
+                        class="md-raised md-primary"
+                        ng-click="applySettings()"
+                        ng-disabled="!settingsChanged"
+                      >
+                        APPLY CHANGES
+                      </md-button>
+                      <md-button
+                        ng-click="revertSettings()"
+                        ng-disabled="!settingsChanged"
+                      >
+                        CANCEL
+                      </md-button>
+                    </div>
+                  </div>
+
+                  <div layout="column" flex="50">
+                    <!-- Rankings chart -->
+                      <div style="position: relative" layout-fill>
+                        <rankings-chart
+                          data="rankings"
+                          layout-fill
+                          layout="column"
+                          layout-align="center center"
+                        ></rankings-chart>
+                        <div style="position: absolute; top:0; right: 8px; text-align: end">
+                          <small>Distribution of citations<br>(log scale)</small>
+                        </div>
+                      </div>
+                  </div>
+
+                </div>
+              </div>
+
+              
+
+              <!-- Infinite list -->
+              <div flex style="padding: 0px 8px 0px 8px">
+
+                <!-- Loading -->
+                <div
+                  layout-fill
+                  ng-if="!dynamicWebentities || (dynamicWebentities.numItems==0 && dynamicWebentities.loading)"
+                  layout="column"
+                  layout-align="center center"
+                >
+                  <spinner text="''"></spinner>
+                </div>
+
+                <!-- Loaded but no results -->
+                <div
+                  layout-fill
+                  ng-if="dynamicWebentities && dynamicWebentities.numItems==0 && !dynamicWebentities.loading && dynamicWebentities.querySettings.field_kw[0][1] != ''"
+                  md-colors="{'background': 'default-background-100'}"
+                  layout="column"
+                  layout-align="center center"
+                >
+                  NO DISCOVERED ENTITIES
+                </div>
+                
+                <!-- Loaded with results -->
+                <div
+                  layout-fill
+                  layout="column"
+                  ng-if="dynamicWebentities && dynamicWebentities.numItems > 0"
+                >
+                  <md-subheader
+                    class="follow-md-virtual-repeat-width"
+                  >
+                    <div layout="row" style="padding-right: 46px; padding-left: 100px;">
+                      <div
+                        flex
+                        md-colors="{'color': 'default-primary'}"
+                      >
+                        NAME
+                      </div>
+                      <div
+                        class="welist-col-cited"
+                        md-colors="{'color': 'default-accent'}"
+                      >
+                        CITED
+                        <md-tooltip md-direction="top">Number of other web entities citing it in the corpus</md-tooltip>
+                        <md-icon class="welist-icon md-accent">arrow_upward</md-icon>
+                      </div>
+                    </div>
+                  </md-subheader>
+                  <div flex>
+                    <md-virtual-repeat-container layout-fill>
+                      <md-list
+                        md-colors="{
+                          'background': 'default-background-100'
+                        }"
+                      >
+                        <md-list-item
+                          md-virtual-repeat="obj in dynamicWebentities"
+                          ng-class="{
+                            'discovered-to-in': setIndex[obj.webentity.id].status == 'IN',
+                            'discovered-to-undecided': setIndex[obj.webentity.id].status == 'UNDECIDED',
+                            'discovered-to-out': setIndex[obj.webentity.id].status == 'OUT'
+                          }"
+                          md-item-size="48"
+                          md-on-demand
+                          flex
+                        >
+                          <div class="mini-status-selector" style="margin-right: 8px">
+
+                            <md-button
+                              class="btn-in"
+                              ng-class="{'md-raised':setIndex[obj.webentity.id].status != 'IN'}"
+                              ng-click="setStatus(obj, 'IN')"
+                              md-colors="{
+                                'background': (setIndex[obj.webentity.id].status != 'IN')
+                                  ? ('default-background-50')
+                                  : ('default-background-200-0.3')
+                              }"
+                            >
+                              <md-tooltip md-direction="top">Set to IN</md-tooltip>
+                              I
+                            </md-button>
+
+                            <md-button
+                              class="btn-undecided"
+                              ng-class="{'md-raised':setIndex[obj.webentity.id].status != 'UNDECIDED'}"
+                              ng-click="setStatus(obj, 'UNDECIDED')"
+                              md-colors="{
+                                'background': (setIndex[obj.webentity.id].status != 'UNDECIDED')
+                                  ? ('default-background-50')
+                                  : ('default-background-200-0.3')
+                              }"
+                            >
+                              <md-tooltip md-direction="top">Set to UNDECIDED</md-tooltip>
+                              ?
+                            </md-button>
+
+                            <md-button
+                              class="btn-out"
+                              ng-class="{'md-raised':setIndex[obj.webentity.id].status != 'OUT'}"
+                              ng-click="setStatus(obj, 'OUT')"
+                              md-colors="{
+                                'background': (setIndex[obj.webentity.id].status != 'OUT')
+                                  ? ('default-background-50')
+                                  : ('default-background-200-0.3')
+                              }"
+                            >
+                              <md-tooltip md-direction="top">Set to OUT</md-tooltip>
+                              O
+                            </md-button>
+
+                          </div>
+
+                          <p flex layout="row">
+                            <a
+                              ng-show="obj.webentity.homepage"
+                              href="{{obj.webentity.homepage}}"
+                              target="_blank"
+                              ng-click="$event.stopPropagation();"
+                              style="margin-right:2px"
+                            >
+                              <md-tooltip md-direction="left">{{obj.webentity.homepage}}</md-tooltip>
+                              <md-icon>link</md-icon>
+                            </a>
+                            <span md-truncate flex>
+                              {{obj.webentity.name || 'Loading'}}
+                            </span>
+                          </p>
+                          <div
+                            class="welist-col-cited"
+                          >
+                            <md-tooltip md-direction="right">Is cited by {{obj.webentity.indegree|number}} other web entities in the corpus</md-tooltip>
+                            {{obj.webentity.indegree|number}}
+                          </div>
+                          <webentity-link class="md-secondary" corpus-id="corpusId" webentity-id="obj.webentity.id"></webentity-link>
+                        </md-list-item>
+                      </md-list>
+                    </md-virtual-repeat-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div layout="column" flex="30" style="padding: 8px 0px 0px 8px">
+
+              <!-- IN: Title -->
+              <div layout="row" md-colors="{'background':'default-background-200'}">
+                <div style="padding: 8px" flex>
+                  {{setToIn}} SET TO IN
+                </div>
+              </div>
+
+              <!-- IN: List preview -->
+              <div
+                class="selected-webentities-container"
+                ng-if="setToIn > 0"
+                md-colors="{'background': 'default-background-100'}"
+              >
+                <md-list
+                  class="discovered-to-in"
+                  layout-fill
+                >
+                  <md-list-item
+                    ng-repeat="(k,obj) in setIndex"
+                    ng-if="obj.status == 'IN'"
+                  >
+                    <span md-truncate>{{obj.webentity.name}}</span>
+                    <md-button class="md-icon-button md-secondary" ng-click="removeFromSetIndex(k)">
+                      <md-icon>close</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </md-list>
+              </div>
+
+              <!-- IN: ACTION -->
+              <div layout="column" md-colors="{'background':'default-background-100'}" style="padding: 8px" ng-if="setToIn > 0">
+                <md-button
+                  class="md-raised md-primary"
+                  ng-click="doCrawl('IN')"
+                  flex
+                >
+                  <md-icon>opacity</md-icon>
+                  CRAWL
+                </md-button>
+              
+              </div>
+
+              <!-- UNDECIDED: Title -->
+              <div
+                layout="row"
+                md-colors="{'background':'default-background-200'}"
+                style="margin-top: 16px"
+              >
+                <div style="padding: 8px" flex>
+                  {{setToUndecided}} SET TO UNDECIDED
+                </div>
+              </div>
+
+              <!-- UNDECIDED: List preview -->
+              <div
+                class="selected-webentities-container-small"
+                ng-if="setToUndecided > 0"
+                md-colors="{'background': 'default-background-100'}"
+              >
+                <md-list
+                  class="discovered-to-undecided"
+                  layout-fill
+                >
+                  <md-list-item
+                    ng-repeat="(k,obj) in setIndex"
+                    ng-if="obj.status == 'UNDECIDED'"
+                  >
+                    <span md-truncate>{{obj.webentity.name}}</span>
+                    <md-button class="md-icon-button md-secondary" ng-click="removeFromSetIndex(k)">
+                      <md-icon>close</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </md-list>
+              </div>
+
+              <!-- OUT: Title -->
+              <div
+                layout="row"
+                md-colors="{'background':'default-background-200'}"
+                style="margin-top: 16px"
+              >
+                <div style="padding: 8px" flex>
+                  {{setToOut}} SET TO OUT
+                </div>
+              </div>
+
+              <!-- OUT: List preview -->
+              <div
+                class="selected-webentities-container-small"
+                ng-if="setToOut > 0"
+                md-colors="{'background': 'default-background-100'}"
+              >
+                <md-list
+                  class="discovered-to-out"
+                  layout-fill
+                >
+                  <md-list-item
+                    ng-repeat="(k,obj) in setIndex"
+                    ng-if="obj.status == 'OUT'"
+                  >
+                    <span md-truncate>{{obj.webentity.name}}</span>
+                    <md-button class="md-icon-button md-secondary" ng-click="removeFromSetIndex(k)">
+                      <md-icon>close</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </md-list>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

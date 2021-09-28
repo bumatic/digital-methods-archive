@@ -1,0 +1,284 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: auto;"
+      >
+
+        <!-- Content -->
+        <div layout-fill layout="column">
+
+          <div class="page-header">
+            <h1 class="word-break" md-truncate>
+              <md-icon>folder</md-icon>
+              Explore as folders:
+              <a ng-href="#/project/{{corpusId}}/webentity/{{webentity.id}}">
+                {{webentity.name || 'loading'}}
+              </a>
+            </h1>
+          </div>
+
+          <div flex layout="column" layout-align="center center" ng-if="loading">
+            <spinner></spinner>
+          </div>
+
+          <div flex layout="column" ng-if="!loading">
+            <div layout="row" layout-align="start center">
+
+              <md-button class="md-raised md-primary" ng-click="goToParent()" ng-disabled="pathUrl == ''">
+                <md-icon>arrow_back</md-icon>
+                BACK
+              </md-button>
+
+              <md-button
+                class="md-icon-button"
+                aria-label="Home"
+                ng-if="path.length > 0"
+                ng-click="goTo()"
+                style="font-size: 0.74em; margin:0"
+              >
+                <md-icon
+                  style="font-size: 24px; height:24px; width:24px; min-height:24px; min-width:24px"
+                >home</md-icon>
+              </md-button>
+              <div
+                ng-if="path.length == 0"
+                style="font-size: 0.74em; margin:0; white-space: nowrap; text-transform: uppercase; padding-left: 8px"
+                md-colors="{'color':'default-accent'}"
+              >
+                <md-icon
+                  class="md-accent"
+                  style="font-size: 24px; height:24px; width:24px; min-height:24px; min-width:24px"
+                >home</md-icon>
+                Web entity root
+              </div>
+
+              <div ng-repeat="obj in path track by $index" layout="row" layout-align="start center">
+                <md-icon
+                  style="font-size: 18px; height:18px; width:18px; min-height:18px; min-width:18px"
+                >chevron_right</md-icon>
+                <md-button
+                  aria-label="{{obj.label}}"
+                  ng-click="goTo(obj.node)"
+                  ng-if="path.length > 0 && path.length > $index+1"
+                  style="font-size: 0.74em; margin: 0; min-width: 0px"
+                >
+                  {{obj.label}}
+                </md-button>
+                <div
+                  ng-if="path.length == 0 || path.length == $index+1"
+                  style="font-size: 0.74em; margin:0; white-space: nowrap; text-transform: uppercase; padding-left:6px"
+                  md-colors="{'color':'default-accent'}"
+                >
+                  {{obj.label}}
+                </div>
+              </div>
+
+              <!-- <div flex></div> -->
+
+              <md-button class="md-icon-button md-primary" aria-label="Link" ng-href="{{pathUrl}}" target="_blank" ng-if="pathUrl != ''">
+                <md-icon>link</md-icon>
+              </md-button>
+            </div>
+
+            <div layout="row" style="padding: 8px; height: 62px">
+              <md-input-container>
+                <label>Sort</label>
+                <md-select ng-model="$parent.itemSort" class="md-no-underline">
+                  <md-option value="pages">by pages count</md-option>
+                  <md-option value="alphabetical">from A to Z</md-option>
+                </md-select>
+              </md-input-container>
+              <div flex></div>
+              <md-button
+                class="md-primary"
+                ng-if="creationRuleLoaded && creationRule == null && pathUrl != ''"
+                ng-click="addWECreationRule()"
+              >
+                <md-icon>content_cut</md-icon>
+                ADD A RULE TO SPLIT THIS IN DIFFERENT WEB ENTITIES
+              </md-button>
+
+              <md-button
+                class="md-primary"
+                ng-if="creationRuleLoaded && creationRule != null"
+                ng-click="removeWECreationRule()"
+              >
+                <md-icon>delete</md-icon>
+                REMOVE WEB ENTITY CREATION RULE
+              </md-button>
+            </div>
+
+            <div
+              flex
+              layout="column"
+              layout-align="center center"
+              ng-if="item_list.length == 0"
+              md-colors="{'background':'default-background-100-0.3'}"
+            >
+              NOTHING HERE
+            </div>
+
+            <div flex ng-if="item_list.length > 0">
+
+              <md-virtual-repeat-container layout-fill>
+                <md-list>
+
+                  <div ng-repeat="item in item_list">
+
+                    <!-- Type: title -->
+                    <md-toolbar ng-if="item.type=='title'">
+                      <div class="md-toolbar-tools">
+                        <h3>
+                          <span>{{ item.label }}</span>
+                        </h3>
+                      </div>
+                    </md-toolbar>
+
+                    <!-- Type: prefix of this web entity -->
+                    <md-list-item
+                      ng-if="item.type=='prefix'"
+                      class="md-2-line"
+                      ng-click="goTo(item.node)"
+                    >
+                      <md-icon class="md-avatar-icon">folder_special</md-icon>
+                      <div class="md-list-item-text">
+                        <h3>
+                          {{ item.label }}
+                        </h3>
+                        <p>Prefix</p>
+                        <div class="md-secondary">
+                          {{item.pagesCount == 0 ? 'No page' : item.pagesCount == 1 ? '1 page' : (item.pagesCount|number) + ' pages'}}
+                        </div>
+                        <md-button
+                          class="md-icon-button md-secondary"
+                          ng-click="removePrefix(item)"
+                        >
+                          <md-tooltip md-direction="left">Remove prefix</md-tooltip>
+                          <md-icon>close</md-icon>
+                        </md-button>
+                      </div>
+                    </md-list-item>
+
+                    <!-- Type: folder -->
+                    <md-list-item
+                      ng-if="item.type=='folder'"
+                      class="md-2-line"
+                      ng-click="goTo(item.node)"
+                    >
+                      <md-icon class="md-avatar-icon">folder</md-icon>
+                      <div class="md-list-item-text">
+                        <h3>
+                          {{ item.label }}
+                        </h3>
+                        <p>Folder ({{ item.subtype_explicit }})</p>
+                        <div class="md-secondary">
+                          {{item.pagesCount == 0 ? 'No page' : item.pagesCount == 1 ? '1 page' : (item.pagesCount|number) + ' pages'}}
+                        </div>
+                        <md-button
+                          class="md-secondary md-primary"
+                          ng-click="newWebEntity(item)"
+                        >
+                          New web entity
+                        </md-button>
+                      </div>
+                    </md-list-item>
+
+                    <!-- Type: page -->
+                    <md-list-item
+                      ng-if="item.type=='page'"
+                      class="md-2-line"
+                    >
+                      <md-icon class="md-avatar-icon">description</md-icon>
+                      <div class="md-list-item-text">
+                        <h3>
+                          <a href="{{item.url}}" target="_blank" title="Open in a new tab">
+                            <md-tooltip md-direction="left">Open URL in a new tab</md-tooltip>
+                            <md-icon>link</md-icon>
+                          </a>
+                          <a ng-if="item.data.archive_url" href="{{item.data.archive_url}}" target="_blank">
+                            <md-tooltip md-direction="left">Open archived page (from {{ item.archive_date_obtained}}) in a new tab</md-tooltip>
+                            <md-icon>history</md-icon>
+                          </a>
+                          {{ item.label }}
+                        </h3>
+                        <p>Page ({{ item.subtype_explicit }})</p>
+                        <div class="md-secondary" ng-if="page.crawled">
+                          <md-tooltip md-direction="left">Crawled</md-tooltip>
+                          <md-icon>opacity</md-icon>
+                        </div>
+                        <div class="md-secondary" ng-if="!page.crawled">
+                          <md-tooltip md-direction="left">Not crawled</md-tooltip>
+                          <md-icon style="opacity: 0.2">opacity</md-icon>
+                        </div>
+                        <md-button
+                          class="md-secondary md-primary"
+                          ng-click="newWebEntity(item)"
+                        >
+                          New web entity
+                        </md-button>
+                      </div>
+                    </md-list-item>
+
+                    <!-- Type: prefix of CHILD web entity -->
+                    <md-list-item
+                      ng-if="item.type=='otherWebentityPrefix'"
+                      class="md-2-line"
+                      ng-href="#/project/{{corpusId}}/webentityExplorer/{{item.data.id}}"
+                    >
+                      <md-icon class="md-avatar-icon">business_center</md-icon>
+                      <div class="md-list-item-text">
+                        <h3>
+                          {{ item.label }}
+                        </h3>
+                        <p>Prefix of <strong>{{item.data.name}}</strong></p>
+                        <md-button
+                          class="md-secondary md-primary"
+                          ng-click="mergeIntoCurrent(item.data.id)"
+                        >
+                          <md-icon class="icon-tilt">call_merge</md-icon>
+                          Merge into this
+                        </md-button>
+                      </div>
+                    </md-list-item>
+
+                    <!-- Type: PARENT web entity -->
+                    <md-list-item
+                      ng-if="item.type=='parentWebentity'"
+                      class="md-2-line"
+                      ng-href="#/project/{{corpusId}}/webentityExplorer/{{item.data.id}}"
+                    >
+                      <md-icon class="md-avatar-icon">business_center</md-icon>
+                      <div class="md-list-item-text">
+                        <h3>
+                          {{ item.label }}
+                        </h3>
+                        <p>Parent web entity</p>
+                        <md-button
+                          class="md-secondary md-primary"
+                          ng-click="mergeIntoCurrent(item.data.id)"
+                        >
+                          <md-icon class="icon-tilt">call_merge</md-icon>
+                          Merge into this
+                        </md-button>
+                      </div>
+                    </md-list-item>
+
+                  </div>
+                </md-list>
+              </md-virtual-repeat-container>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

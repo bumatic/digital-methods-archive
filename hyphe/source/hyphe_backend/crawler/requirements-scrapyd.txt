@@ -1,0 +1,12 @@
+service_identity==18.1.0
+urllib3[secure]
+Twisted==20.3.0
+Scrapy==1.8.0
+scrapyd==1.2.1
+scrapyd-client==1.2.0a1
+selenium==2.42.1
+pymongo==3.8
+queuelib==1.4.2
+txmongo==19.2.0
+ural==0.30.5
+tld==0.12.1

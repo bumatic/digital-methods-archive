@@ -1,0 +1,50 @@
+version: "2"
+volumes:
+    archives:
+    config:
+    traph-data:
+    mongo-data:
+    scrapyd-logs:
+    scrapyd-eggs:
+services:
+  backend:
+    restart: "${RESTART_POLICY}"
+    image: scpomedialab/hyphe_backend:${TAG}
+    build: .
+    links:
+     - "mongo:mongo"
+     - "crawler:crawler"
+    env_file:
+     - config-backend.env
+    environment:
+     - HYPHE_MONGODB_HOST=mongo
+     - HYPHE_CRAWLER_HOST=crawler
+     - HYPHE_TRAPH_DATAPATH=/app/traph-data
+    volumes:
+      - config:/app/config
+      - ${DATA_PATH}archives:/app/archives
+      - ${DATA_PATH}traph-data:/app/traph-data
+  frontend:
+    restart: "${RESTART_POLICY}"
+    image: scpomedialab/hyphe_frontend:${TAG}
+    build: ./hyphe_frontend
+    ports:
+      - "${PUBLIC_PORT}:80"
+    links:
+      - "backend:backend"
+    env_file:
+     - config-frontend.env
+  crawler:
+    restart: "${RESTART_POLICY}"
+    image: scpomedialab/hyphe_crawler:${TAG}
+    build: ./hyphe_backend/crawler
+    links:
+      - "mongo:mongo"
+    volumes:
+      - ${DATA_PATH}scrapyd-logs:/var/log/scrapyd
+      - ${DATA_PATH}scrapyd-eggs:/var/lib/scrapyd
+  mongo:
+    restart: "${RESTART_POLICY}"
+    image: mongo:3.6
+    volumes:
+      - ${DATA_PATH}mongo-data:/data/db

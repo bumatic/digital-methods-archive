@@ -1,0 +1,19 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+      >
+        <webentities-network-widget
+          status="status"
+          corpus-name="corpusName"
+        ></webentities-network-widget>
+
+      </div>
+    </div>
+  </div>
+</div>

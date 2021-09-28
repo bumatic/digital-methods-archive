@@ -1,0 +1,6 @@
+jsonrpclib
+pymongo
+#chardet
+#JPype1
+#boilerpipe
+git+https://github.com/medialab/python-boilerpipe.git

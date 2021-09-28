@@ -1,0 +1,217 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div flex md-colors="{background: 'default-background-50'}" style="overflow-y: auto;">
+        
+        <!-- Content -->
+        <div ng-show="corpusStatus">
+
+          <!-- Welcome message when empty -->
+          <div ng-hide="corpusStatus.corpus.traph.webentities.total" class="page-header">
+            <h1>
+              Welcome to your Hyphe corpus!
+            </h1>
+            <p class="md-body-1">
+              Start defining the first <span hyphe-glossary="web entities"></span> of your corpus by <a href="#/project/{{corpusId}}/importurls">importing urls</a> to <span hyphe-glossary="crawl"></span>.
+            </p>
+            <p class="md-body-1">
+            Advanced users : you should first check the <a href="#/project/{{corpusId}}/settings">SETTINGS</a> tab, and change it before loading any <span hyphe-glossary="crawl"></span>. No modifications will be allowed after the first <span hyphe-glossary="crawl"></span>.
+            </p>
+          </div>
+
+          <!-- Header when corpus not empty -->
+          <div class="page-header" ng-show="corpusStatus.corpus.traph.webentities.total">
+            <h1>
+              OVERVIEW
+            </h1>
+            <span class="md-subhead">
+              Monitor the state of web entities and the activity on this corpus
+            </span>
+          </div>
+
+          <!-- Information when corpus not empty -->
+          <div ng-show="corpusStatus.corpus.traph.webentities.total" layout="column">
+
+            <hr>
+
+            <!-- Current activity -->
+            <div layout="row">
+              <div style="width:140px; padding: 0px 16px 0px 8px;">
+                <div class="md-title">CURRENT ACTIVITY</div>
+              </div>
+              <div flex style="padding-right: 64px">
+                <hyphe-current-activity status="corpusStatus"></hyphe-current-activity>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Blocks by status -->
+            <div layout="row">
+              <div style="width:140px; padding: 0px 16px 0px 8px;">
+                <div class="md-title">STATE OF THE CORPUS</div>
+              </div>
+              <div flex style="padding-right: 64px">
+                <md-grid-list
+                  md-cols-xs="2"
+                  md-cols-sm="2"
+                  md-cols-gt-sm="4"
+                  md-row-height="1:1"
+                  md-gutter="8px"
+                >
+
+                  <md-grid-tile md-rowspan="1" md-colspan="1">
+                    <div layout-fill layout="column" layout-align="center center" class="pointable" ng-class="{'webentity-background-in':statuses.in, 'webentity-background-null': !statuses.in}" ng-click="statuses.in = !statuses.in">
+                      <div class="md-title">
+                        IN
+                      </div>
+                      <div class="md-headline">
+                        {{corpusStatus.corpus.traph.webentities.IN|number}}
+                      </div>
+                    </div>
+                  </md-grid-tile>
+
+                  <md-grid-tile md-rowspan="1" md-colspan="1">
+                    <div layout-fill layout="column" layout-align="center center" class="pointable" ng-class="{'webentity-background-undecided':statuses.undecided, 'webentity-background-null': !statuses.undecided}" ng-click="statuses.undecided = !statuses.undecided">
+                      <div class="md-title">
+                        UNDECIDED
+                      </div>
+                      <div class="md-headline">
+                        {{corpusStatus.corpus.traph.webentities.UNDECIDED|number}}
+                      </div>
+                    </div>
+                  </md-grid-tile>
+
+                  <md-grid-tile md-rowspan="1" md-colspan="1">
+                    <div layout-fill layout="column" layout-align="center center" class="pointable" ng-class="{'webentity-background-out':statuses.out, 'webentity-background-null': !statuses.out}" ng-click="statuses.out = !statuses.out">
+                      <div class="md-title">
+                        OUT
+                      </div>
+                      <div class="md-headline">
+                        {{corpusStatus.corpus.traph.webentities.OUT|number}}
+                      </div>
+                    </div>
+                  </md-grid-tile>
+
+                  <md-grid-tile md-rowspan="1" md-colspan="1">
+                    <div layout-fill layout="column" layout-align="center center" class="pointable" ng-class="{'webentity-background-discovered':statuses.discovered, 'webentity-background-null': !statuses.discovered}" ng-click="statuses.discovered = !statuses.discovered">
+                      <div class="md-title">
+                        DISCOVERED
+                      </div>
+                      <div class="md-headline">
+                        {{corpusStatus.corpus.traph.webentities.DISCOVERED|number}}
+                      </div>
+                    </div>
+                  </md-grid-tile>
+
+                </md-grid-list>
+              </div>
+            </div>
+
+            <!-- Activity charts -->
+            <div layout="row">
+              <div style="width:140px; padding: 0px 16px 0px 8px;">
+                <div class="md-title">WEB ENTITY VOLUME OVER TIME</div>
+                <md-switch ng-model="statusLogMode" aria-label="Log" style="margin:0px">
+                  Log curves
+                </md-switch>
+              </div>
+              <div flex layout="column">
+                <div style="height: 300px; position: relative">
+                  <activity-chart
+                    data="corpusStatistics"
+                    statuses="statuses"
+                    log-mode="statusLogMode"
+                    layout-fill
+                    layout="column"
+                    layout-align="center center"
+                    ng-if="displayStatistics"
+                  ></activity-chart>
+                </div>
+              </div>
+            </div>
+            <div layout="row">
+              <div style="width:140px; padding: 0px 16px 0px 8px;">
+                <div class="md-title">UNCRAWLED AND UNTAGGED WEB ENTITIES</div>
+              </div>
+              <div flex layout="column">
+                <div style="height: 300px; position: relative">
+                  <activity-chart-2
+                    data="corpusStatistics"
+                    layout-fill
+                    layout="column"
+                    layout-align="center center"
+                    ng-if="displayStatistics"
+                  ></activity-chart-2>
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Crawl jobs -->
+            <div layout="row" style="margin-bottom: 100px">
+              <div style="width:140px; padding: 0px 16px 0px 8px;">
+                <div class="md-title">
+                  {{(
+                    corpusStatus.corpus.crawler.jobs_running
+                    + corpusStatus.corpus.crawler.jobs_pending
+                    + corpusStatus.corpus.crawler.jobs_finished
+                  )|number}}
+                  CRAWL JOBS
+                </div>
+                <div layout="column">
+                  <span md-colors="{'color':'default-primary'}">
+                    {{corpusStatus.corpus.crawler.jobs_running|number}} running
+                  </span>
+                  <span md-colors="{'color':'default-background-300'}">
+                    {{corpusStatus.corpus.crawler.jobs_pending|number}} pending
+                  </span>
+                  <span md-colors="{'color':'default-background-500'}">
+                    {{corpusStatus.corpus.crawler.jobs_finished|number}} finished
+                  </span>
+                </div>
+
+              </div>
+              <div flex style="padding-right: 64px">
+                <md-grid-list
+                  style="margin-bottom: 8px"
+                  md-cols="8"
+                  md-cols-sm="16"
+                  md-cols-md="24"
+                  md-cols-gt-md="36"
+                  md-gutter="4px"
+                  md-row-height="1:1"
+                >
+                  <md-grid-tile
+                    class="visual-crawl-job-tile"
+                    ng-repeat="job in visualCrawlJobs|limitTo:256"
+                    md-colors="{
+                      'background':
+                        (job.status == 'running')
+                        ? ('default-primary-500')
+                        : (
+                          (job.status == 'finished')
+                          ? ('default-background-200')
+                          : ('default-background-100-0.5')
+                        )
+                    }"
+                  >
+                    <md-tooltip md-direction="top">{{job.status}}</md-tooltip>
+                  </md-grid-tile>
+                </md-grid-list>
+                <em ng-if="visualCrawlJobs.length>256">Only 256 crawl jobs displayed. Total: {{visualCrawlJobs.length|number}}</em>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

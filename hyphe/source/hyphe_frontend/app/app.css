@@ -1,0 +1,1321 @@
+/* ==========================================================================
+   Generic styles
+   ========================================================================== */
+
+/* For vertical full size */
+html, body, .ng-view-container{
+  height: 100%;
+}
+
+/* Global color and font */
+body {
+  color: #555;
+  font-family: 'Open Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+  font-size: 1.7em;
+}
+
+a {
+  text-decoration: none;
+}
+
+.definition {
+  border-bottom: 1px dotted #777;
+  cursor: help;
+}
+
+.page-header {
+  padding: 8px;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.page-header .md-subhead {
+  margin: 0;
+}
+
+.md-grid-tile-header-hack figcaption {
+  width: 100%;
+  height: 100%;
+}
+
+.md-grid-tile-footer-hack {
+  background: rgb(226, 221, 216);
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.md-grid-tile-footer-hack figcaption {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.crawl_advanced md-select {
+  margin: 0;
+  width: fit-content;
+}
+
+.crawl_advanced md-input-container {
+  margin: 0;
+}
+
+.pointable-grid-tile {
+  cursor: pointer;
+  opacity: 1.0;
+}
+
+.pointable-grid-tile:hover {
+  opacity: 0.8;
+}
+
+.hint {
+  /* Position the hint */
+  position: absolute;
+  left: 2px;
+  right: auto;
+  top: 33px;
+  /* Copy styles from ng-messages */
+  font-size: 12px;
+  line-height: 14px;
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+}
+
+.hint.ng-hide,
+.hint.ng-enter,
+.hint.ng-leave.ng-leave-active {
+  top: 14px;
+  opacity: 0;
+}
+
+.hint.ng-leave,
+.hint.ng-enter.ng-enter-active {
+  top: 33px;
+  opacity: 1;
+}
+
+dl.key-value-pairs {
+  margin-top: 0px;
+}
+
+dl.key-value-pairs dt {
+  font-weight: 600;
+  font-size: 0.8em;
+  margin-top: 16px;
+  padding-bottom: 2px;
+}
+
+dl.key-value-pairs dd {
+  background-color: rgba(255,255,255,0.3);
+  margin-left: 0;
+  padding: 4px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.webentity-link-icon {
+  opacity: 0.8;
+}
+
+.icon-flip {
+  -moz-transform: scaleY(-1);
+  -o-transform: scaleY(-1);
+  -webkit-transform: scaleY(-1);
+  transform: scaleY(-1);
+  filter: FlipV;
+  -ms-filter: "FlipV";
+}
+
+.icon-tilt {
+  -moz-transform: rotateZ(90deg);
+  -o-transform: rotateZ(90deg);
+  -webkit-transform: rotateZ(90deg);
+  transform: rotateZ(90deg);
+}
+
+.vspacer { /* Vertical spacer */
+  height: 32px;
+}
+
+kbd {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #fff;
+  background-color: #333;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.25);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.25);
+}
+
+.pointable{
+  cursor: pointer;
+}
+
+.word-break{
+  word-wrap:break-word;
+}
+
+/* Disclaimer */
+.disclaimer {
+  margin: 10px 10px 0px 10px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 6px;
+  margin-bottom: 24px;
+  background-color: #fcf59b;
+  -webkit-transform: rotateZ(-2deg);
+     -moz-transform: rotateZ(-2deg);
+          transform: rotateZ(-2deg);
+  box-shadow: rgba(0, 0, 0, 0.4) 0 2px 10px, inset rgba(0, 0, 0, 0.2) 0 0 
+}
+
+.disclaimer .disclaimer-header {
+  padding: 3px;
+  margin-bottom: 3px;
+  background-color: rgba(254, 56, 56, 0.8);
+  font-size: 12px;
+  color: #FFF;
+
+}
+
+dl.highlight {
+  border-left: 6px solid #428BCA;
+  padding-left: 6px;
+  background-color: #FFF;
+}
+
+.compact-chart-title-overlay {
+  position: absolute;
+  top:0;
+  left: 0;
+  padding: 0px 8px 8px 0px;
+}
+
+.visual-crawl-job-tile:hover {
+  opacity: 0.5;
+}
+
+@keyframes fallingdrop {
+    from {
+      transform: translateY(0%);
+    }
+    to {
+      transform: translateY(100%);
+    }
+}
+
+.falling-drop {
+  animation-name: fallingdrop;
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+}
+
+.network-search {
+  width: 100%;
+}
+
+.network-search md-input-container {
+  margin-bottom: 5px;
+}
+
+.network-sidebar .md-title, .network-sidebar .webentity-link {
+  margin-top: 0px;
+}
+
+.network-sidebar .webentity-link a, .network-sidebar .webentity-link a:visited {
+  color: black;
+}
+
+.network-key-text {
+  font-size: 0.9em;
+}
+
+
+/* ==========================================================================
+   Material tweaks
+   ========================================================================== */
+
+md-list.md-dense md-list-item .md-avatar,
+md-list.md-dense md-list-item .md-list-item-inner .md-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.md-chips-no-line md-chips-wrap{
+  box-shadow: none;
+}
+
+.md-chip-input-container {
+  width: 100%;
+}
+
+.fix-scroll-glitch {
+  background-color: #F00;
+}
+
+.fieldnotes md-chip {
+  clear: both;
+}
+
+
+/* ==========================================================================
+   Menus and side bar
+   ========================================================================== */
+
+.sidebar-width {
+  width: 180px;
+}
+
+.topbar-height {
+  height: 48px;
+}
+
+.topbar-project {
+  font-weight: 600;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+
+
+/* ==========================================================================
+   D3 stuff
+   ========================================================================== */
+
+.d3-rankings-tooltip {
+  position: absolute;
+  width: 200px;
+  height: 18px;
+  pointer-events: none;
+  font-size: 9px;
+}
+
+
+
+/* ==========================================================================
+   Web entity colors
+   ========================================================================== */
+
+.webentity-color-in {
+  color: #333;
+}
+.webentity-color-undecided {
+  color: #ADA299;
+}
+.webentity-color-out {
+  color: #E67E7E;
+}
+.webentity-color-discovered {
+  color: #75ADDC;
+}
+.webentity-background-in {
+  background-color: #333;
+  color: #FFF;
+}
+.webentity-background-undecided {
+  background-color: #ADA299;
+}
+.webentity-background-out {
+  background-color: #E67E7E;
+}
+.webentity-background-discovered {
+  background-color: #75ADDC;
+}
+.webentity-background-null {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* ==========================================================================
+   URLs can be very loooong
+   ========================================================================== */
+
+.url-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.url-container .url {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight:400;
+}
+.url-container .url-break {
+  white-space: normal;
+  word-break: break-all;
+}
+
+
+
+/* ==========================================================================
+   Mini status selector
+   ========================================================================== */
+
+.mini-status-selector .md-button {
+  min-width: 28px;
+  width: 28px;
+  min-height: 28px;
+  height: 28px;
+  margin: 0px;
+  padding: 0px 2px 0px 2px;
+  line-height: 2;
+}
+
+.mini-status-selector .btn-in {
+  border-bottom: 4px solid #333;
+}
+
+.mini-status-selector .btn-undecided {
+  border-bottom: 4px solid #ADA299;
+}
+
+.mini-status-selector .btn-out {
+  border-bottom: 4px solid #FAA;
+}
+
+.mini-status-selector .btn-discovered {
+  border-bottom: 4px solid #93BDE0;
+}
+
+
+
+/* ==========================================================================
+   Big Bullet Numbers
+   ========================================================================== */
+
+.big-bullet-number {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  font-size: 20px;
+  font-weight: 300;
+  text-align: center;
+  color: #000;
+  background-color: #EFEBE8;
+  margin: 2px 8px 4px 0px;
+}
+
+
+
+/* ==========================================================================
+   Pulse
+   ========================================================================== */
+
+.glyphicon.pulse {
+  animation-name: pulse;
+  animation-duration: 1.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate; 
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.8;
+    transform: scale(0.9);
+  }
+}
+
+
+
+/* ==========================================================================
+   Tag box
+   ========================================================================== */
+
+.tagbox {
+  background-color: #EFEBE8;
+  padding: 6px;
+  margin-bottom: 20px;
+}
+
+.tagbox-head {
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  text-transform: uppercase;
+}
+
+.tagbox-head a.editable,
+.tagbox-head a.editable-empty {
+  color: inherit;
+  font-style: normal;
+  border-bottom: dashed 1px #ccc;
+}
+
+/* Tweak ng-tag-input */
+tags-input .tags {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+tags-input .tags .tag-item {
+  background: #EFEBE8;
+  color: #000;
+}
+
+.tagbox.freetags {
+  background-color: #FFF;
+  color: #000;
+  padding: 0px;
+}
+
+.freetags tags-input .tags {
+  background: #EFEBE8;
+  border-radius: 0px;
+  border: none;
+}
+
+.freetags tags-input .tags .input {
+  border: solid 1px #acacac;
+  border-radius: 3px;
+  margin: 6px;
+}
+
+.freetags tags-input .tags .tag-item {
+  background: #FFF;
+  color: #000;
+  margin: 6px;
+}
+
+
+
+/* ==========================================================================
+   View: Login
+   ========================================================================== */
+
+.welcome-logo {
+  margin: 12px;
+}
+
+.welcome-logo h1 {
+  font-size: 52px;
+  font-weight: 300;
+  padding: 0;
+  margin: 0;
+}
+
+.project-list-container {
+  max-height: 220px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.project-list-container .item {
+  border-bottom: 1px solid #E7E3E0;
+  background-color: #F7F3F0;
+  padding: 6px;
+  -webkit-user-select: none; 
+   -moz-user-select: none;
+    -ms-user-select: none;
+             select: none;
+  cursor: pointer;
+}
+
+.project-list-container .item.item-blocked {
+  cursor: no-drop;
+}
+
+.project-list-container .item.item-ok:hover {
+  background-color: #FCF9F6;
+}
+
+.project-list-container .item-name {
+  font-size: 16px;
+}
+
+.project-list-container .item-status {
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.project-list-container .item-stats {
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.project-list-container .item-date {
+  margin-top: 4px;
+  font-size: 9px;
+}
+
+.credits-list {
+  width: 100%;
+  background-color: #EFEBE8;
+  height: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.credits-list-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #EFEBE8;
+  height: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.credits-list .md-list-item-inner, .credits-list-footer .md-list-item-inner{
+  font-weight: lighter;
+  text-align: center;
+  height: 80px;
+}
+
+.pusher {
+  height: 120px;
+}
+
+/* ==========================================================================
+   View: Import URLs
+   ========================================================================== */
+
+textarea.over {
+  border-color: rgba(117, 179, 229, 0.8);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(117, 179, 229, 0.6);
+}
+
+textarea.over-error {
+  border-color: rgba(148, 25, 25, 0.8);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(148, 25, 25, 0.6);
+}
+
+.preview-table {
+  margin-bottom: 2px;
+  font-weight: 300;
+  font-size: 0.9em;
+}
+
+.preview-table td, .preview-table th {
+  background-color: #FFF;
+  border: 1px solid #DDD;
+  padding: 6px;
+}
+
+.layout-align-center-center .md-button {
+  padding: 0 16px;
+}
+
+
+/* ==========================================================================
+   View: Define Web Entities
+   ========================================================================== */
+
+.define-entity-repeated-item {
+  height: 84px;
+  overflow: hidden;
+}
+
+.define-entity-row-id {
+  width: 84px;
+  padding-right: 24px;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.define-entity-row-remove {
+  width: 36px;
+}
+
+.define-entity-repeated-item.odd {
+  background-color: rgb(239, 235, 232, 0.75);
+}
+
+
+/* ==========================================================================
+   View: Monitor Crawls
+   ========================================================================== */
+
+.crawl-tile-overlay {
+  position: absolute;
+  overflow: hidden;
+}
+
+.crawl-tile-overlay p {
+  white-space: nowrap;
+  margin: 0px;
+}
+
+.crawl-tile-overlay .title {
+  font-family: 'Roboto', sans-serif;
+  font-weight:400;
+}
+
+.crawl-tile-overlay .subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9em;
+  font-weight: 300;
+}
+
+.crawl-tile-overlay .stats .subtitle {
+  text-align: center;
+}
+
+.crawl-tile-overlay .stats {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9em;
+  font-weight: 300;
+}
+
+.crawljobs-col-dept, .crawljobs-col-arch {
+  padding: 0px 8px 0px 8px;
+  font-size: 0.8em;
+  width: 20px;
+  text-align: right;
+}
+
+.crawljobs-col-stat {
+  padding: 0px 8px 0px 8px;
+  font-size: 0.8em;
+  width: 80px;
+}
+
+.crawljobs-col-inde,
+.crawljobs-col-craw,
+.crawljobs-col-disp,
+.crawljobs-col-disl {
+  padding: 0px 8px 0px 8px;
+  font-size: 0.8em;
+  width: 36px;
+  text-align: right;
+}
+
+.crawljobs-col-sche {
+  padding: 0px 8px 0px 8px;
+  font-size: 0.8em;
+  width: 100px;
+}
+
+.crawljobs-col-dura {
+  padding: 0px 8px 0px 8px;
+  font-size: 0.8em;
+  width: 80px;
+}
+
+.list-all-crawls .md-secondary {
+  outline-style: none;
+}
+
+.icon-to-right{
+  position: absolute !important;
+  top: 130px;
+  right: 0px;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   View: Web Entities List
+   ========================================================================== */
+
+.selected-webentities-container {
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.selected-webentities-container-small {
+  overflow-y: auto;
+  max-height: 100px;
+}
+
+
+
+/* ==========================================================================
+   View: Export
+   ========================================================================== */
+
+.bulleted-title {
+  margin-left: 42px;
+}
+
+.bulleted-title .big-bullet-number {
+  margin-left: -42px;
+  margin-top: -1px;
+}
+
+
+
+/* ==========================================================================
+   View: Prospect
+   ========================================================================== */
+
+.discovered-to-in {
+  background-color: rgba(51, 51, 51, 0.4);
+}
+
+.discovered-to-undecided {
+  background-color: rgba(173, 162, 153, 0.4);
+}
+
+.discovered-to-out {
+  background-color: rgba(255, 170, 170, 0.4);
+}
+
+
+
+/* ==========================================================================
+   Factored between different views: Web Entity List
+   ========================================================================== */
+
+.welist-col-status {
+  width: 50px;
+  padding: 0px 8px 0px 8px;
+}
+
+.welist-col-last-crawled {
+  width: 38px;
+  padding: 0px 8px 0px 8px;
+}
+
+.welist-col-number {
+  width: 68px;
+  padding: 0px 16px 0px 0px;
+  text-align: right;
+}
+
+.welist-col-number-header {
+  width: 68px;
+  padding: 0px 8px 0px 8px;
+  text-align: right;
+}
+
+.welist-col-last-modif {
+  width: 100px;
+  padding: 0px 8px 0px 8px;
+}
+
+
+
+/* ==========================================================================
+   Module: Web Entity Start Pages Modal
+   ========================================================================== */
+
+.wesp-modal-loading {
+  opacity: 0.6;
+}
+
+.wesp-modal-removed {
+  opacity: 0.2;
+}
+
+/* ==========================================================================
+   View: Settings
+   ========================================================================== */
+
+.blur-stuff{
+  opacity: 0.3;
+}
+
+/* ==========================================================================
+   Module: Web Entity Slider
+   ========================================================================== */
+
+.hyphe-prefix-slider {
+  -webkit-user-select: none;         
+  -moz-user-select: none;
+  -ms-user-select: none;
+  select: none;
+  cursor: default;
+}
+
+.hyphe-prefix-slider .stem-container {
+  position: relative;
+  overflow-y: auto;
+}
+
+.hyphe-prefix-slider .name-container,
+.hyphe-prefix-slider .status-container {
+  word-break:keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+  font-weight:400;
+}
+
+.hyphe-prefix-slider .prefix-link {
+  width: 36px;
+  padding-top: 12px;
+}
+
+.hyphe-prefix-slider .stem {
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 12px;
+  height: 36px;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* slider button */
+.hyphe-prefix-slider .slider-button-container {
+  position: absolute;
+  cursor: pointer;
+}
+
+.hyphe-prefix-slider .slider-button-container .slider-hitbox {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  background-color: rgba(250, 250, 250, 0.0);
+}
+
+.hyphe-prefix-slider .slider-button-container .slider-bar {
+  position: absolute;
+  width: 4px;
+  height: 48px;
+  margin-left: -2px;
+}
+
+.hyphe-prefix-slider .slider-button-container .slider-button {
+  position: absolute;
+  width: 12px;
+  height: 24px;
+  margin-top: 12px;
+  border-radius: 0px 12px 12px 0px;
+}
+
+.hyphe-prefix-slider .slider-button-container .slider-button-hover {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin-left: -6px;
+  margin-top: 17px;
+  border-radius: 7px 7px 7px 7px;
+  display: none;
+}
+
+.hyphe-prefix-slider .slider-button-container:hover .slider-button-hover {
+  display: initial;
+}
+
+
+
+/* ==========================================================================
+   Module: Water ball inspired from http://codepen.io/harukatruong/pen/kmjwt
+   ========================================================================== */
+
+.water-loader {
+  position: relative;
+}
+
+.water-loader, .water-loader:before, .water-loader:after {
+  margin: 0; padding: 0;
+  -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+
+.water-loader .ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -67px 0 0 -67px;
+  width: 120px; height: 120px;
+  padding: 6px;
+  border-radius: 100%;
+  border: 1px solid #FFF;
+}
+
+.water-loader .wave {
+  opacity: 0;
+  width: 100%; height: 100%;
+  border-radius: 100%;
+  background: url(img/water.png);
+  -webkit-animation: wave-animation 1s infinite linear, loading-animation 10s infinite ease-in;
+          animation: wave-animation 1s infinite linear, loading-animation 10s infinite ease-in;
+  background-size: 200px 100px;
+  background-repeat: repeat-x;
+}
+
+.water-loader .delay {
+  -webkit-animation-delay: 0.3s;
+          animation-delay: 0.3s;
+}
+
+.water-loader-content {
+  margin-top: -74px;
+  text-align: center;
+  font-weight: 300;
+  font-size: 20px;
+}
+
+.water-loader-content.message-lonely {
+  margin-top: -12px;
+}
+
+@-webkit-keyframes wave-animation {
+  0% {background-position: 0 bottom;}
+  100% {background-position: 200px bottom;}
+}
+
+@keyframes wave-animation {
+  0% {background-position: 0 bottom;}
+  100% {background-position: 200px bottom;}
+}
+
+@-webkit-keyframes loading-animation {
+  0% {background-size: 200px 0px; opacity: 1;}
+  100% {background-size: 200px 200px; opacity: 0;}
+}
+
+@keyframes loading-animation {
+  0% {background-size: 200px 0px; opacity: 1;}
+  100% {background-size: 200px 200px; opacity: 0;}
+}
+
+/* cog */
+.water-loader .cog-container {
+  position: absolute;
+  top: 50%; left: 50%; margin: -65px 0 0 -60px;
+  width: 120px; height: 120px;
+}
+
+.water-loader .cog {
+  -webkit-animation: full-rotation 40s infinite linear;
+          animation: full-rotation 40s infinite linear;
+}
+
+@-webkit-keyframes full-rotation {
+  from {-webkit-transform: rotate(0deg);}
+  to   {-webkit-transform: rotate(359deg);}
+}
+
+@keyframes full-rotation {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(359deg);}
+}
+
+.water-loader-content.cog-message {
+  margin-top: -72px;
+}
+
+
+
+/* ==========================================================================
+   Mini Spinner
+   ========================================================================== */
+
+/* Spinner Slices */
+.sp-slices {
+  border-radius: 50%;
+  border-top: 20px rgba(0, 0, 0, 0.75) solid;
+  border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+  border-right: 20px rgba(0, 0, 0, 0.25) solid;
+  -webkit-animation: spSlices 1s infinite linear;
+  animation: spSlices 1s infinite linear;
+  width: 0;
+  height: 0;
+}
+
+@-webkit-keyframes spSlices {
+  0% {
+    border-top: 20px rgba(0, 0, 0, 0.75) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+  25% {
+    border-top: 20px rgba(0, 0, 0, 0.25) solid;
+    border-right: 20px rgba(0, 0, 0, 0.75) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+  50% {
+    border-top: 20px rgba(0, 0, 0, 0.25) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.75) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+  75% {
+    border-top: 20px rgba(0, 0, 0, 0.25) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.75) solid;
+  }
+  100% {
+    border-top: 20px rgba(0, 0, 0, 0.75) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+}
+
+@keyframes spSlices {
+  0% {
+    border-top: 20px rgba(0, 0, 0, 0.75) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+  25% {
+    border-top: 20px rgba(0, 0, 0, 0.25) solid;
+    border-right: 20px rgba(0, 0, 0, 0.75) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+  50% {
+    border-top: 20px rgba(0, 0, 0, 0.25) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.75) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+  75% {
+    border-top: 20px rgba(0, 0, 0, 0.25) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.75) solid;
+  }
+  100% {
+    border-top: 20px rgba(0, 0, 0, 0.75) solid;
+    border-right: 20px rgba(0, 0, 0, 0.25) solid;
+    border-bottom: 20px rgba(0, 0, 0, 0.25) solid;
+    border-left: 20px rgba(0, 0, 0, 0.25) solid;
+  }
+}
+
+
+
+/* ==========================================================================
+   Module: Spinner - from http://tobiasahlin.com/spinkit/
+   ========================================================================== */
+
+.spinner-container.center {
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.spinner-container .spinner {
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.sk-folding-cube {
+  margin: 20px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+  -webkit-transform: rotateZ(45deg);
+          transform: rotateZ(45deg);
+}
+
+.sk-folding-cube .sk-cube {
+  float: left;
+  width: 50%;
+  height: 50%;
+  position: relative;
+  -webkit-transform: scale(1.1);
+      -ms-transform: scale(1.1);
+          transform: scale(1.1);
+}
+
+.sk-folding-cube .sk-cube:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #428bca;
+  -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
+          animation: sk-foldCubeAngle 2.4s infinite linear both;
+  -webkit-transform-origin: 100% 100%;
+      -ms-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+}
+
+.sk-folding-cube .sk-cube2 {
+  -webkit-transform: scale(1.1) rotateZ(90deg);
+          transform: scale(1.1) rotateZ(90deg);
+}
+
+.sk-folding-cube .sk-cube3 {
+  -webkit-transform: scale(1.1) rotateZ(180deg);
+          transform: scale(1.1) rotateZ(180deg);
+}
+
+.sk-folding-cube .sk-cube4 {
+  -webkit-transform: scale(1.1) rotateZ(270deg);
+          transform: scale(1.1) rotateZ(270deg);
+}
+
+.sk-folding-cube .sk-cube2:before {
+  -webkit-animation-delay: 0.3s;
+          animation-delay: 0.3s;
+}
+
+.sk-folding-cube .sk-cube3:before {
+  -webkit-animation-delay: 0.6s;
+          animation-delay: 0.6s; 
+}
+
+.sk-folding-cube .sk-cube4:before {
+  -webkit-animation-delay: 0.9s;
+          animation-delay: 0.9s;
+}
+
+@-webkit-keyframes sk-foldCubeAngle {
+  0%, 10% {
+    -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+    opacity: 0; 
+  } 25%, 75% {
+    -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+    opacity: 1; 
+  } 90%, 100% {
+    -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+    opacity: 0; 
+  } 
+}
+
+@keyframes sk-foldCubeAngle {
+  0%, 10% {
+    -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+    opacity: 0; 
+  } 25%, 75% {
+    -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+    opacity: 1; 
+  } 90%, 100% {
+    -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+    opacity: 0; 
+  }
+}
+
+.spinner-container .spinner-text {
+  color: rgba(66,139,202,.7);
+  font-size: 24px;
+  font-weight: 300;
+  padding-left: 6px;
+  margin-top: -10px;
+}
+
+
+
+/* ==========================================================================
+   Module: Range Selector
+   ========================================================================== */
+
+.range-selector-container {
+  height: 80px;
+
+  background-color: #FFF;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  width: 100%;
+  padding: 6px 12px;
+
+  -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
+     -moz-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
+          box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
+}
+
+
+
+/* ==========================================================================
+   Module: Statuses Box
+   ========================================================================== */
+
+.statuses-box .checkox-muted {
+  opacity: 0.5;
+}
+
+.statuses-box .label-count {
+  opacity: 0.5;
+  margin-left: 6px;
+}
+
+.statuses-box button {
+  margin: 6px 0px 6px 4px;
+}
+
+.statuses-box button.vertical {
+  margin: 0px 6px 4px 6px;
+}
+
+.statuses-box .btn-in {
+  border-bottom: 4px solid #333;
+}
+
+.statuses-box .btn-in.vertical {
+  border-bottom: none;
+  border-left: 6px solid #333;
+}
+
+.statuses-box .btn-in .status-colored {
+  color: #333;
+}
+
+.statuses-box .btn-undecided {
+  border-bottom: 4px solid #ADA299;
+}
+
+.statuses-box .btn-undecided.vertical {
+  border-bottom: none;
+  border-left: 6px solid #ADA299;
+}
+
+.statuses-box .btn-undecided .status-colored {
+  color: #ADA299;
+}
+
+.statuses-box .btn-out {
+  border-bottom: 4px solid #FAA;
+}
+
+.statuses-box .btn-out.vertical {
+  border-bottom: none;
+  border-left: 6px solid #FAA;
+}
+
+.statuses-box .btn-out .status-colored {
+  color: #FAA;
+}
+
+.statuses-box .btn-discovered {
+  border-bottom: 4px solid #93BDE0;
+}
+
+.statuses-box .btn-discovered.vertical {
+  border-bottom: none;
+  border-left: 6px solid #93BDE0;
+}
+
+.statuses-box .btn-discovered .status-colored {
+  color: #93BDE0;
+}
+
+.hide-out.md-checked .md-icon {
+  color: #ADA299;
+}
+
+
+/* ==========================================================================
+   Sigma related stuff
+   ========================================================================== */
+
+.md-button.md-icon-button.sigma-button {
+  background-color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.md-button.md-icon-button.sigma-button:hover {
+  background-color: rgba(255, 255, 255, 1);
+}

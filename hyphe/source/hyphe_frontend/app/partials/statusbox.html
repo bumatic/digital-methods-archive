@@ -1,0 +1,147 @@
+<!-- Horizontal version -->
+<div class="statuses-box" layout="row" ng-if="!vertical">
+  <md-button
+    class="btn-in"
+    ng-class="{'md-raised':!statuses.in}"
+    ng-model="statuses.in"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.in = !statuses.in"
+    md-colors="{'background': (statuses.in) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <md-icon ng-if="!statuses.in" style="opacity: 0.5">check_box_outline_blank</md-icon>
+    <md-icon ng-if="statuses.in" class="status-colored">check_box</md-icon>
+    <span class="label-status">IN</span>
+    <span class="label-count">{{counts.in|number}}</span>
+  </md-button>
+
+  <md-button
+    class="btn-undecided"
+    ng-class="{'md-raised':!statuses.undecided}"
+    ng-model="statuses.undecided"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.undecided = !statuses.undecided"
+    md-colors="{'background': (statuses.undecided) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <md-icon ng-if="!statuses.undecided" style="opacity: 0.5">check_box_outline_blank</md-icon>
+    <md-icon ng-if="statuses.undecided" class="status-colored">check_box</md-icon>
+    <span class="label-status">UNDECIDED</span>
+    <span class="label-count">{{counts.undecided|number}}</span>
+  </md-button>
+
+  <md-button
+    class="btn-out"
+    ng-class="{'md-raised':!statuses.out}"
+    ng-model="statuses.out"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.out = !statuses.out"
+    md-colors="{'background': (statuses.out) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <md-icon ng-if="!statuses.out" style="opacity: 0.5">check_box_outline_blank</md-icon>
+    <md-icon ng-if="statuses.out" class="status-colored">check_box</md-icon>
+    <span class="label-status">OUT</span>
+    <span class="label-count">{{counts.out|number}}</span>
+  </md-button>
+
+  <md-button
+    class="btn-discovered"
+    ng-class="{'md-raised':!statuses.discovered}"
+    ng-model="statuses.discovered"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.discovered = !statuses.discovered"
+    md-colors="{'background': (statuses.discovered) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <md-icon ng-if="!statuses.discovered" style="opacity: 0.5">check_box_outline_blank</md-icon>
+    <md-icon ng-if="statuses.discovered" class="status-colored">check_box</md-icon>
+    <span class="label-status">DISCOVERED</span>
+    <span class="label-count">{{counts.discovered|number}}</span>
+  </md-button>
+
+</div>
+
+<!-- Vertical version -->
+<div class="statuses-box" layout="column" ng-if="vertical">
+  <md-button
+    class="btn-in vertical"
+    ng-class="{'md-raised':!statuses.in}"
+    ng-model="statuses.in"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.in = !statuses.in"
+    md-colors="{'background': (statuses.in) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <div flex layout="row" layout-align="start start">
+      <md-icon ng-if="!statuses.in" style="opacity: 0.5">check_box_outline_blank</md-icon>
+      <md-icon ng-if="statuses.in" class="status-colored">check_box</md-icon>
+      <span class="label-status" style="padding-left: 4px">IN</span>
+      <span class="label-count">{{counts.in|number}}</span>
+      <div flex></div>
+    </div>
+  </md-button>
+
+  <md-button
+    class="btn-undecided vertical"
+    ng-class="{'md-raised':!statuses.undecided}"
+    ng-model="statuses.undecided"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.undecided = !statuses.undecided"
+    md-colors="{'background': (statuses.undecided) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <div flex layout="row" layout-align="start start">
+      <md-icon ng-if="!statuses.undecided" style="opacity: 0.5">check_box_outline_blank</md-icon>
+      <md-icon ng-if="statuses.undecided" class="status-colored">check_box</md-icon>
+      <span class="label-status" style="padding-left: 4px">UNDECIDED</span>
+      <span class="label-count">{{counts.undecided|number}}</span>
+      <div flex></div>
+    </div>
+  </md-button>
+
+  <md-button
+    class="btn-out vertical"
+    ng-class="{'md-raised':!statuses.out}"
+    ng-model="statuses.out"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.out = !statuses.out"
+    md-colors="{'background': (statuses.out) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <div flex layout="row" layout-align="start start">
+      <md-icon ng-if="!statuses.out" style="opacity: 0.5">check_box_outline_blank</md-icon>
+      <md-icon ng-if="statuses.out" class="status-colored">check_box</md-icon>
+      <span class="label-status" style="padding-left: 4px">OUT</span>
+      <span class="label-count">{{counts.out|number}}</span>
+      <div flex></div>
+    </div>
+  </md-button>
+
+  <md-button
+    class="btn-discovered vertical"
+    ng-class="{'md-raised':!statuses.discovered}"
+    ng-model="statuses.discovered"
+    ng-change="change"
+    ng-disabled="disabled"
+    ng-click="statuses.discovered = !statuses.discovered"
+    md-colors="{'background': (statuses.discovered) ? ('default-background-100-0.5') : ('default-background-50-0.8')}"
+    btn-checkbox
+  >
+    <div flex layout="row" layout-align="start start">
+      <md-icon ng-if="!statuses.discovered" style="opacity: 0.5">check_box_outline_blank</md-icon>
+      <md-icon ng-if="statuses.discovered" class="status-colored">check_box</md-icon>
+      <span class="label-status" style="padding-left: 4px">DISCOVERED</span>
+      <span class="label-count">{{counts.discovered|number}}</span>
+      <div flex></div>
+    </div>
+  </md-button>
+
+</div>

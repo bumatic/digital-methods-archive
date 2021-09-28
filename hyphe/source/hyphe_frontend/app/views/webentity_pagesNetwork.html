@@ -1,0 +1,163 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: hidden;"
+      >
+        
+        <!-- Content -->
+        <div layout-fill layout="column">
+
+          <div class="page-header">
+            <h1 class="word-break" md-truncate>
+              <md-icon>bubble_chart</md-icon>
+              Pages network:
+              <a ng-href="#/project/{{corpusId}}/webentity/{{webentity.id}}">
+                {{webentity.name || 'loading'}}
+              </a>
+            </h1>
+          </div>
+
+          <div flex layout="column" layout-align="center center" ng-if="loading">
+            <spinner></spinner>
+          </div>
+
+          <div flex layout="column" ng-if="!loading" style="position: relative">
+            <md-button
+              class="md-fab md-primary"
+              aria-label="Open network settings"
+              style="position: absolute; right: 16px; top: 16px;"
+              ng-click="toggleSidenav()"
+            >
+              <md-tooltip md-direction="left">Network Viz Settings</md-tooltip>
+              <md-icon>layers</md-icon>
+            </md-button>
+
+            <sigma-network
+              layout-fill
+              network="network"
+              download-network="downloadNetwork"
+              on-node-click="networkNodeClick"
+
+            ></sigma-network>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Side Nav -->
+<md-sidenav
+  class="md-sidenav-right"
+  md-component-id="right"
+  md-disable-backdrop
+  md-whiteframe="4"
+  md-is-open="true"
+  ng-show="!loading"
+>
+
+  <md-toolbar class="md-primary">
+    <div class="md-toolbar-tools">
+      <h2 md-truncate flex>Network Viz Settings</h2>
+
+      <md-button
+        class="md-icon-button"
+        ng-click="toggleSidenav()"
+      ><md-icon>close</md-icon></md-button>
+    </div>
+    
+  </md-toolbar>
+
+  <md-content>
+    <div
+      layout="column"
+      style="padding: 8px"
+    >
+    <div
+      style="padding: 8px"
+      layout="column"
+    >
+      <p class="md-title">Key</p>
+      
+      <div layout="row" style="padding-bottom: 32px">
+        <div style="width: 48px" layout="column" layout-align="center center">
+          <md-icon>fiber_manual_record</md-icon>
+        </div>
+        <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+          <div class="network-key-text">
+            Each dot or <em>node</em> is a <span hyphe-glossary="page"></span>
+          </div>
+        </div>
+      </div>
+
+      <div layout="row" style="padding-bottom: 32px">
+        <div style="width: 48px" layout="column" layout-align="center center">
+          <md-icon style="transform: rotate(-30deg)">remove</md-icon>
+        </div>
+        <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+          <div class="network-key-text">
+            Each line or <em>edge</em> or <em>link</em> represents a <span hyphe-glossary="hyperlink"></span>.
+            <br>
+            Links are oriented even though it is not figured in the image.
+          </div>
+        </div>
+      </div>
+
+      <p>NODE COLOR</p>
+
+      <div layout="row" style="padding-bottom: 16px" ng-repeat="item in nodeColorMap">
+        <div style="width: 48px" layout="column" layout-align="center center">
+          <md-icon ng-style="{'color':item.color}">fiber_manual_record</md-icon>
+        </div>
+        <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+          <div class="network-key-text">
+            {{item.name}}
+            <span ng-if="item.count">({{item.count}})</span>
+          </div>
+        </div>
+      </div>
+
+      <div layout="row" layout-align="start center">
+        <p style="margin-right: 16px">NODE SIZE: DEGREE</p>
+        <md-button class="md-icon-button" style="margin: 0px" ng-click="nodeSizeBaseRatio = 1.2 * nodeSizeBaseRatio">
+          <md-icon>add_circle_outline</md-icon>
+          <md-tooltip md-direction="top">Bigger nodes</md-tooltip>
+        </md-button>
+        <md-button class="md-icon-button" style="margin: 0px" ng-click="nodeSizeBaseRatio = 0.8 * nodeSizeBaseRatio">
+          <md-icon>remove_circle_outline</md-icon>
+          <md-tooltip md-direction="top">Smaller nodes</md-tooltip>
+        </md-button>
+      </div>
+      <div class="network-key-text" ng-if="nodeSizeMode == 'degree'" style="padding-bottom: 16px">
+        <em>The DEGREE of a web entity is the number of other web entities it cites plus the number of other web entities citing it.</em>
+      </div>
+
+      <div layout="row" style="padding-bottom: 16px" ng-repeat="item in nodeSizeMap">
+        <div style="width: 48px" layout="column" layout-align="center center">
+          <md-icon ng-style="{'transform':'scale('+item.size+')'}">fiber_manual_record</md-icon>
+        </div>
+        <div flex layout="column" layout-align="center start" style="padding-left: 8px">
+          <div class="network-key-text">
+            {{item.name}}
+            <br>
+            DEGREE of
+            <span>{{item.value}}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </md-content>
+
+</md-sidenav>

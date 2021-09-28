@@ -1,0 +1,41 @@
+{
+  "name": "hyphe-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Frontend for the Hyphe crawler.",
+  "repository": "https://github.com/angular/angular-seed",
+  "license": "LGPL-3.0",
+  "devDependencies": {
+    "css-loader": "^0.28.7",
+    "style-loader": "^0.19.0",
+    "webpack": "^3.6.0"
+  },
+  "scripts": {
+    "build": "webpack --colors --progress",
+    "postinstall": "npm run build"
+  },
+  "dependencies": {
+    "angular": "1.6.6",
+    "angular-animate": "1.6.6",
+    "angular-aria": "1.6.6",
+    "angular-bowser": "0.0.4",
+    "angular-loader": "1.6.6",
+    "angular-material": "1.1.5",
+    "angular-md5": "0.1.10",
+    "angular-messages": "1.6.6",
+    "angular-mocks": "1.6.6",
+    "angular-route": "1.6.6",
+    "angular-sanitize": "1.6.6",
+    "angulartics": "1.4.0",
+    "d3": "4.11.0",
+    "file-saver": "1.3.3",
+    "graphology": "0.14.1",
+    "graphology-components": "0.1.0",
+    "graphology-gexf": "0.5.0",
+    "graphology-hits": "0.1.0",
+    "graphology-layout": "0.1.0",
+    "graphology-layout-forceatlas2": "0.2.1",
+    "ng-tags-input": "3.2.0",
+    "sigma": "2.0.0-alpha20"
+  }
+}

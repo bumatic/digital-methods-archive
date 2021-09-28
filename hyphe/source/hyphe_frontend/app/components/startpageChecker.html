@@ -1,0 +1,28 @@
+<div ng-if="data.status=='other webentity'" style="border-top: 1px #CCC solid; padding: 16px 0px 16px 0px">
+  <div ng-if="obj === undefined || obj.status=='loading'" layout="column">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+  </div>
+  <div ng-if="obj.status=='error'" md-colors="{'background': 'default-warn'}">
+    {{obj.errorMessage}}
+  </div>
+  <div ng-if="obj.status=='loaded'" layout="column">
+
+    <div style="padding: 8px">
+      <div hyphe-prefix-slider="{editMode:true}" row-active="true" obj="obj" webentity="webentity"></div>
+    </div>
+
+    <div ng-if="obj.task.type == 'addPrefix'" layout="row" style="padding: 8px">
+      <md-checkbox ng-model="wwwVariations" aria-label="WWW variations" class="md-primary">
+        Include <span hyphe-glossary="www variations"></span>
+      </md-checkbox>
+      <md-checkbox ng-model="httpsVariations" aria-label="HTTPS variations" class="md-primary">
+        Include <span hyphe-glossary="https variations"></span>
+      </md-checkbox>
+    </div>
+
+    <div layout="row" layout-align="start">
+      <md-button class="md-raised md-primary" ng-click="ok()">{{obj.task.type == 'addPrefix' ? 'ADD PREFIX' : obj.task.type == 'merge' ? 'MERGE' : 'OK'}}</md-button>
+      <md-button ng-click="cancel()">Drop this start page</md-button>
+    </div>
+  </div>
+</div>

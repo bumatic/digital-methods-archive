@@ -1,0 +1,138 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: auto;"
+      >
+        
+        <!-- Content -->
+        <div layout-fill layout="column">
+          <div class="page-header">
+            <h1>
+              IMPORT URLS
+            </h1>
+            <span class="md-subhead">
+              Import URLs to build <span hyphe-glossary="web entities"></span>
+            </span>
+          </div>
+
+          <div flex layout="row">
+
+            <!-- Left column: text area -->
+            <div flex="30" layout="column" style="padding-left: 8px">
+              <div>
+                <md-button ng-click="loadFile()" layout-fill>
+                  <md-icon>file_upload</md-icon>
+                  Import file
+                </md-button>
+              </div>
+              <md-input-container class="md-block" ng-if="differedLoading">
+                <label>Paste or drag and drop data here</label>
+                <textarea
+                  id="droppable-text-area"
+                  ng-class="dropClass"
+                  ng-model="$parent.dataText"
+                  ng-paste='handlePaste()'
+                  rows="12"
+                  max-rows="12"
+                  md-colors="{background: 'default-primary-50'}"
+                ></textarea>
+              </md-input-container>
+            </div>
+            
+            <!-- Right column: parsing -->
+            <div flex="70" layout="column" style="padding: 0px 8px 0px 16px;" ng-show="dataText!=''">
+              <md-input-container>
+                <label>Parse data as </label>
+                <md-select ng-model="parsingOption" ng-click="settingsTouched = true">
+                  <md-option value="text">TEXT (search for URLs)</md-option>
+                  <md-option value="csv">CSV (comma-separated table)</md-option>
+                  <md-option value="scsv">SCSV (semicolon-separated table)</md-option>
+                  <md-option value="tsv">TSV (tab-separated table)</md-option>
+                </md-select>
+              </md-input-container>
+
+              <div ng-if="parsingOption=='csv' || parsingOption=='tsv' || parsingOption=='scsv'" layout="column">
+                
+                <p class="md-body-2">Preview of data as <strong>{{parsingOption=='csv' ? 'comma' : parsingOption=='tsv' ? 'tabulation' : 'semicolon'}}</strong>-separated values:</p>
+
+                <div class="preview-container">
+                  <table class="preview-table">
+                    <thead ng-if="table.length > 0">
+                      <tr>
+                        <th ng-repeat="col in table[0]|limitTo:previewMaxCol track by $index">
+                          {{col}}
+                        </th>
+                        <th ng-if="table[0].length > previewMaxCol">...</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="row in table|limitTo:previewMaxRow|stripFirst track by $index">
+                        <td ng-repeat="col in row|limitTo:previewMaxCol track by $index">
+                          {{col}}
+                        </td>
+                        <td ng-if="row.length > previewMaxCol">...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <small ng-if="table.length > previewMaxRow">({{table.length - previewMaxRow}} more rows)</small>
+                </div>
+
+                <br>
+
+                <md-checkbox ng-model="$parent.headline" aria-label="First line contains column names" ng-click="settingsTouched = true" class="md-primary">
+                  First line contains column names
+                </md-checkbox>
+
+                <md-input-container>
+                  <label>Column containing the URLs</label>
+                  <md-select ng-model="selectedColumn" ng-click="settingsTouched = true">
+                    <md-option ng-repeat="col in columns" ng-value="col">{{col.name}}</md-option>
+                  </md-select>
+                </md-input-container>
+
+                <div layout="column" layout-align="center center">
+                  <md-button class="md-raised md-primary" href="#/project/{{corpusId}}/definewebentities">
+                    DEFINE WEB ENTIT{{table.length | y_ies | uppercase}}
+                  </md-button>
+                </div>
+
+              </div>
+
+              <div ng-if="parsingOption=='text' && textPreview.length" layout="column">
+                
+                <p class="md-body-2">Preview of urls fetched from full text:</p>
+
+                <div class="preview-container">
+                      <ul>
+                        <li ng-repeat="url in textPreview|limitTo:previewMaxRow">{{url | cleanArchivesPrefix:available_archives}}</li>
+                        <li class="text-muted" ng-if="textPreview.length > previewMaxRow">({{textPreview.length - previewMaxRow}} more)</li>
+                      </ul>
+                    </div>
+
+                <br>
+
+                <div layout="column" layout-align="center center">
+                  <md-button class="md-raised md-primary" href="#/project/{{corpusId}}/definewebentities">
+                    DEFINE WEB ENTIT{{table.length | y_ies | uppercase}}
+                  </md-button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- This hidden input is used for loading the files via the dropdown of the nav tabs -->
+        <input id="hidden-file-input" type="file" name="hidden-file-input" style="display: none;" onchange="angular.element(this).scope().setFile(this)"/>
+      </div>
+    </div>
+  </div>
+</div>

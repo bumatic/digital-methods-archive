@@ -1,0 +1,525 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: auto;"
+      >
+        
+        <!-- Content -->
+        <div layout-fill layout="column">
+          <div class="page-header">
+            <h1>
+              CRAWLS
+            </h1>
+            <span class="md-subhead">
+              Monitor and manage <span hyphe-glossary="crawl jobs"></span>. For a new <span hyphe-glossary="crawl"></span>, use the <a href="#/project/{{corpusId}}/importurls">IMPORT</a> page.
+            </span>
+          </div>
+          <md-button class="icon-to-right md-primary" ng-click="downloadCrawlsCSV()" ng-show="selectedTab === 1 && crawlJobs.length">
+            <md-tooltip md-direction="top">Export all crawls metadata as CSV</md-tooltip>
+            <md-icon>file_download</md-icon>
+              Download Metadata
+          </md-button>
+          <md-tabs md-border-bottom flex md-selected="selectedTab">
+
+            <!-- Tab: last crawls -->
+            <md-tab label="last crawl jobs">
+              
+              <!-- Loading -->
+              <div ng-if="!listLoaded" layout-fill layout="column" layout-align="center center">
+                <spinner class="center" text="''"/>
+              </div>
+
+              <!-- Loaded but empty -->
+              <div ng-if="listLoaded && lastCrawlJobs.length == 0" layout-fill layout="column" layout-align="center center">
+                <h3>No crawl job</h3>
+              </div>
+
+              <!-- Loaded -->
+              <div ng-if="listLoaded && lastCrawlJobs.length > 0" layout-fill layout="column" style="padding: 8px; overflow: auto">
+                <md-grid-list
+                  md-cols-xs="1"
+                  md-cols-sm="2"
+                  md-cols-md="3"
+                  md-cols-lg="5"
+                  md-cols-gt-lg="6"
+                  md-gutter="8px"
+                  md-row-height="1:1"
+                >
+                  <md-grid-tile
+                    ng-repeat="job in lastCrawlJobs|limitTo:30 track by $index"
+                    ng-click="focusOnJob(job, $event)"
+                    class="pointable-grid-tile"
+                  >
+                    <div
+                      layout="column"
+                      layout-align="center center"
+                      layout-fill
+                      md-colors="{
+                        'background': (job.globalStatus == 'CRASHED' || job.globalStatus == 'UNSUCCESSFUL')
+                          ? ('default-warn-200')
+                          : (
+                            (job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')
+                            ? ('default-primary-500')
+                            : (
+                              (job.globalStatus == 'ACHIEVED')
+                              ? ('default-background-200')
+                              : (
+                                (job.globalStatus == 'RETRIED')
+                                ? ('default-primary-200')
+                                : (
+                                  (job.globalStatus == 'CANCELED')
+                                  ? ('default-background-400')
+                                  : ('default-background-100')
+                                )
+                              )
+                            )
+                          )
+                      }"
+                    >
+                      <div
+                        water-loader
+                        message="job.globalStatus"
+                        message-only="!(job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')"
+                        cog="job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING'"
+                      ></div>
+                    </div>
+                    <div
+                      class="crawl-tile-overlay"
+                      layout="column"
+                      layout-fill
+                      style="padding: 8px"
+                      md-colors="{
+                        'color': (job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')
+                          ? ('default-primary-50')
+                          : ('default-background-700')
+                      }"
+                    >
+                      <div flex>
+                        <p class="title">
+                          {{job.webentity_name || 'Web Entity Loading'}}
+                        </p>
+                        <p class="subtitle">
+                          Scheduled <span tooltip="{{job.created_at|date}}">{{job.created_at|prettyDate}}</span>
+                        </p>
+                        <p ng-if="job.finished_at" class="subtitle">
+                          Finished in {{job.finished_at - job.created_at|duration}}
+                        </p>
+                        <p class="subtitle" ng-if="job.crawl_arguments.phantom">
+                          <md-icon>find_in_page</md-icon> Cautious crawl
+                        </p>
+                        <p class="subtitle">
+                          <md-icon style="display: revert; font-size: 1em" class="material-icons" role="img">ads_click</md-icon>
+                          Depth {{job.crawl_arguments.max_depth}}
+                        </p>
+                        <p class="subtitle" ng-show="job.crawl_arguments.cookies">
+                          <md-tooltip md-direction="bottom">A specific cookie was used for this crawl</md-tooltip>
+                          <span style="color:grey; filter: grayscale(100%);">🍪</span>
+                        </p>
+                      </div>
+                      <div layout="column" layout-align="center center" class="stats">
+                        <div>
+                          {{job.nb_crawled_pages}} page{{job.nb_crawled_pages | plural}} crawled
+                        </div>
+                        <div ng-show="job.nb_unindexed_pages">
+                          ({{job.nb_unindexed_pages}} not indexed yet)
+                        </div>
+                        <div ng-show="job.crawl_arguments.webarchives.option" class="subtitle">
+                          <md-tooltip md-direction="bottom">{{ job.crawl_arguments.webarchives.days_range / 2 }} days before &amp; after{{ job.crawl_arguments.webarchives.date }}</md-tooltip>
+                          <md-icon style="font-size: 1.5em" class="material-icons" role="img" aria-label="history">history</md-icon> from {{ job.crawl_arguments.webarchives.option }}
+                        </div>
+                      </div>
+                    </div>
+
+                  </md-grid-tile>
+                </md-grid-list>
+              </div>
+            </md-tab>
+ 
+            <!-- Tab: all crawls -->
+            <md-tab label="all crawl jobs">
+
+              <!-- Loading -->
+              <div ng-if="!dynamicCrawlJobs" layout-fill layout="column" layout-align="center center">
+                <spinner text="''"></spinner>
+              </div>
+
+              <!-- List of all crawls -->
+              <div
+                ng-if="dynamicCrawlJobs"
+                layout-fill
+                layout="column"
+                class="list-all-crawls"
+              >
+                <md-subheader class="md-primary follow-md-virtual-repeat-width" style="height: 48px">
+                  <div layout="row">
+                    <div flex
+                      md-colors="{'color': (sort == 'webentity_name') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('webentity_name')"
+                    >
+                      WEB ENTITY NAME
+                    </div>
+                    <div class="md-secondary crawljobs-col-dept">
+                      <span><md-tooltip md-direction="top">Depth</md-tooltip><md-icon style="font-size: 1.5em">ads_click</md-icon></span>
+                    </div>
+                    <div class="md-secondary crawljobs-col-arch">
+                      <span><md-tooltip md-direction="top">Crawl using Web Archives</md-tooltip><md-icon style="font-size: 1.5em;">history</md-icon></span>
+                    </div>
+                    <div class="md-secondary crawljobs-col-stat"
+                      md-colors="{'color': (sort == 'globalStatus') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('globalStatus')"
+                    >Status</div>
+                    <div class="md-secondary crawljobs-col-inde"
+                      md-colors="{'color': (sort == 'nb_pages_indexed') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('nb_pages_indexed')"
+                    >
+                      <span><md-tooltip md-direction="top">Pages indexed</md-tooltip>PI</span>
+                    </div>
+                    <div class="md-secondary crawljobs-col-craw"
+                      md-colors="{'color': (sort == 'nb_crawled_pages') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('nb_crawled_pages')"
+                    >
+                      <span><md-tooltip md-direction="top">Pages Crawled</md-tooltip>PC</span>
+                    </div>
+                    <div class="md-secondary crawljobs-col-disp"
+                      md-colors="{'color': (sort == 'nb_pages') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('nb_pages')"
+                    >
+                      <span><md-tooltip md-direction="top">Discovered Pages</md-tooltip><md-icon style="font-size: 1.5em;">description</md-icon></span>
+                    </div>
+                    <div class="md-secondary crawljobs-col-disl"
+                      md-colors="{'color': (sort == 'nb_links') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('nb_links')"
+                    >
+                      <span><md-tooltip md-direction="top">Discovered Links</md-tooltip><md-icon style="font-size: 1.5em;">link</md-icon></span>
+                    </div>
+                    <div class="md-secondary crawljobs-col-sche"
+                      md-colors="{'color': (sort == 'created_at') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('created_at')"
+                    >SCHEDULED</div> 
+                    <div class="md-secondary crawljobs-col-dura"
+                      md-colors="{'color': (sort == 'duration') ? ('default-accent') : ('default-primary')}"
+                      ng-click="toggleSort('duration')"
+                    >DURATION</div>
+                  </div>
+                </md-subheader>
+                <div flex>
+                  <md-virtual-repeat-container layout-fill ng-if="dynamicCrawlJobs">
+                    <md-list>
+                      <md-list-item
+                        md-virtual-repeat="job in dynamicCrawlJobs"
+                        md-item-size="48"
+                        md-on-demand
+                        class="crawljob-list-item"
+                        ng-click="focusOnJob(job, $event)"
+                        flex
+                        md-colors="{
+                          'background': (job.globalStatus == 'CRASHED' || job.globalStatus == 'UNSUCCESSFUL')
+                            ? ('default-warn-200')
+                            : (
+                              (job.globalStatus == 'CRAWLING' || job.globalStatus == 'INDEXING' || job.globalStatus == 'WAITING')
+                              ? ('default-primary-500')
+                              : (
+                                (job.globalStatus == 'ACHIEVED')
+                                ? ('default-background-200')
+                                : (
+                                  (job.globalStatus == 'RETRIED')
+                                  ? ('default-primary-200')
+                                  : (
+                                    (job.globalStatus == 'CANCELED')
+                                    ? ('default-background-400')
+                                    : ('default-background-100')
+                                  )
+                                )
+                              )
+                            )
+                        }"
+                      >
+                        <span md-truncate flex>
+                          {{job.webentity_name || 'Web Entity Loading'}}
+                        </span>
+                        <div class="md-secondary crawljobs-col-dept">{{job.crawl_arguments.max_depth}}</div>
+                        <div class="md-secondary crawljobs-col-arch">
+                          <div style="font-size: 0.8em" ng-if="job.crawl_arguments.webarchives.option !== ''">
+                            {{ job.crawl_arguments.webarchives.date.slice(0, 4) }}
+                          </div>
+                        </div>
+                        <div class="md-secondary crawljobs-col-stat">{{job.globalStatus}}</div>
+                        <div class="md-secondary crawljobs-col-inde">{{job.nb_pages_indexed}}</div>
+                        <div class="md-secondary crawljobs-col-craw">{{job.nb_crawled_pages}}</div>
+                        <div class="md-secondary crawljobs-col-disp">{{job.nb_pages}}</div>
+                        <div class="md-secondary crawljobs-col-disl">{{job.nb_links}}</div>
+                        <div class="md-secondary crawljobs-col-sche"><span><md-tooltip md-direction="left">{{job.created_at|date}}</md-tooltip>{{job.created_at|prettyDate}}</span></div> 
+                        <div class="md-secondary crawljobs-col-dura"><div ng-if="job.finished_at - job.created_at > 0">{{job.duration|duration}}</div></div>
+                      </md-list-item>
+                    </md-list>
+                  </md-virtual-repeat-container>
+                </div>
+              </div>
+            </md-tab>
+
+            <!-- Tab: focus on a crawl -->
+            <md-tab label="{{crawljobsIndex[focusedJobId].webentity_name || 'Loading'}}" ng-if="focusedJobId">
+
+              <!-- Loading -->
+              <div ng-if="!crawljobsIndex[focusedJobId].webentity_name" layout-fill layout="column" layout-align="center center">
+                <spinner class="center" text="''"/>
+              </div>
+
+              <!-- Details -->
+              <md-content
+                style="padding: 16px"
+                ng-if="crawljobsIndex[focusedJobId].webentity_name"
+                layout="column"
+                md-colors="{
+                  'background': (crawljobsIndex[focusedJobId].globalStatus == 'CRASHED' || crawljobsIndex[focusedJobId].globalStatus == 'UNSUCCESSFUL')
+                    ? ('default-warn-200')
+                    : (
+                      (crawljobsIndex[focusedJobId].globalStatus == 'CRAWLING' || crawljobsIndex[focusedJobId].globalStatus == 'INDEXING' || crawljobsIndex[focusedJobId].globalStatus == 'WAITING')
+                      ? ('default-primary-500')
+                      : (
+                        (crawljobsIndex[focusedJobId].globalStatus == 'ACHIEVED')
+                        ? ('default-background-200')
+                        : (
+                          (crawljobsIndex[focusedJobId].globalStatus == 'RETRIED')
+                          ? ('default-primary-200')
+                          : (
+                            (crawljobsIndex[focusedJobId].globalStatus == 'CANCELED')
+                            ? ('default-background-400')
+                            : ('default-background-100')
+                          )
+                        )
+                      )
+                    )
+                }"
+              >
+                <h2>
+                  {{crawljobsIndex[focusedJobId].webentity_name || 'Web Entity Loading'}} - <span class="text-muted" tooltip="{{crawljobsIndex[focusedJobId].created_at|date}}">{{crawljobsIndex[focusedJobId].created_at|prettyDate}}</span>
+                </h2>
+
+                <div layout="row">
+                  <md-button
+                    ng-if="crawljobsIndex[focusedJobId].crawling_status == 'RUNNING' || crawljobsIndex[focusedJobId].crawling_status == 'PENDING'"
+                    class="md-raised md-warn"
+                    ng-click="abortCrawl(crawljobsIndex[focusedJobId])"
+                  >
+                    <md-icon>clear</md-icon>
+                    {{ crawljobsIndex[focusedJobId].crawling_status == 'RUNNING' ? 'ABORT' : 'STOP' }} CRAWL
+                    <md-tooltip>Stop harvesting and indexing pages for this webentity</md-tooltip>
+                  </md-button>
+
+                  <md-button
+                    ng-if="crawljobsIndex[focusedJobId].crawling_status == 'FINISHED' && crawljobsIndex[focusedJobId].indexing_status != 'FINISHED'"
+                    class="md-raised md-warn"
+                    ng-click="abortCrawl(crawljobsIndex[focusedJobId])"
+                  >
+                    <md-icon>clear</md-icon>
+                    STOP INDEXING
+                    <md-tooltip>Stop indexing pages that were harvested but not indexed yet</md-tooltip>
+                  </md-button>
+
+                  <md-button
+                    ng-if="crawljobsIndex[focusedJobId].crawling_status == 'CANCELED' || crawljobsIndex[focusedJobId].indexing_status == 'FINISHED' || crawljobsIndex[focusedJobId].indexing_status == 'CANCELED'"
+                    class="md-raised "
+                    ng-click="reCrawl(crawljobsIndex[focusedJobId])"
+                  >
+                    <md-icon>replay</md-icon>
+                    RECRAWL
+                    <md-tooltip>Launch an identical crawl job</md-tooltip>
+                  </md-button>
+                </div>
+
+                <h3 style="margin-bottom:0px">IDENTITY</h3>
+                <dl class="key-value-pairs">
+
+                  <dt>Project</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.project}}</dd>
+
+                  <dt>Crawl job ID</dt>
+                  <dd>{{crawljobsIndex[focusedJobId]._id}}</dd>
+
+                  <dt>Scrapy ID</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].crawljob_id}}</dd>
+
+                  <dt>Web entity ID</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].webentity_id}}</dd>
+
+                  <dt>Web entity Name</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].webentity_name}} <webentity-link corpus-id="corpusId" webentity-id="crawljobsIndex[focusedJobId].webentity_id"></dd>
+
+                </dl>
+
+                <h3 style="margin-bottom:0px">SETTINGS</h3>
+                <dl class="key-value-pairs">
+
+                  <dt><md-icon style="font-size: 1.5em;" class="material-icons" role="img" aria-label="history">ads_click</md-icon><span hyphe-glossary="Depth"/></dt>
+                  <dd><span class="badge">{{crawljobsIndex[focusedJobId].crawl_arguments.max_depth}}</span></dd>
+
+                  <dt><span hyphe-glossary="Cautious crawl"/></dt>
+                  <dd ng-if="crawljobsIndex[focusedJobId].crawl_arguments.phantom">
+                    <md-icon>find_in_page</md-icon> YES
+                  </dd>
+                  <dd ng-if="!crawljobsIndex[focusedJobId].crawl_arguments.phantom">
+                    No
+                  </dd>
+                  
+                </dl>
+
+                <div ng-if="crawljobsIndex[focusedJobId].crawl_arguments.webarchives.option !== ''">
+                  <h3 style="margin-bottom:0px"><md-icon class="material-icons" role="img" aria-label="history">history</md-icon> WEB ARCHIVES USED</h3>
+                  <dl class="key-value-pairs">
+                    <dt>Source</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.webarchives.option}}</dd>
+                    <dt>Date approached</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.webarchives.date}}</dd>
+                    <dt>Days considered before &amp; after the date</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.webarchives.days_range / 2}}</dd>
+                  </dl>
+                </div>
+
+                <div ng-if="crawljobsIndex[focusedJobId].crawl_arguments.phantom">
+                  <h3 style="margin-bottom:0px">CAUTIOUS CRAWL SETTINGS</h3>
+                  <dl class="key-value-pairs">
+                    <dt>Page Timeout</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.phantom_timeout}}</dd>
+                    <dt>Ajax queries Timeout</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.phantom_ajax_timeout}}</dd>
+                    <dt>Idle Timeout</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.phantom_idle_timeout}}</dd>
+                  </dl>
+                </div>
+
+
+                <h3 style="margin-bottom:0px">ACTIVITY</h3>
+                <dl class="key-value-pairs">
+
+                  <dt>Status</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].globalStatus}}</dd>
+
+                  <dt>Harvesting Status</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].crawling_status}}</dd>
+
+                  <dt>Indexing Status</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].indexing_status}}</dd>
+
+                </dl>
+
+                <h3 style="margin-bottom:0px">CONTENT</h3>
+                <dl class="key-value-pairs">
+
+                  <dt>Crawled pages</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].nb_crawled_pages}}</dd>
+
+                  <div ng-if="crawljobsIndex[focusedJobId].nb_unindexed_pages">
+                    <dt>not indexed yet</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].nb_unindexed_pages}}</dd>
+                  </div>
+
+                  <div ng-if="crawljobsIndex[focusedJobId].forgotten_pages">
+                    <dt>Crawled pages aborted</dt>
+                    <dd>{{crawljobsIndex[focusedJobId].forgotten_pages}}</dd>
+                  </div>
+
+                  <dt>Discovered Pages</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].nb_pages}}</dd>
+
+                  <dt>Discovered Links</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].nb_links}}</dd>
+
+                </dl>
+
+                <h3 style="margin-bottom:0px">DURATION</h3>
+                <dl class="key-value-pairs">
+                  <dt>Scheduled</dt>
+                  <dd><span tooltip="{{crawljobsIndex[focusedJobId].created_at|date}}">{{crawljobsIndex[focusedJobId].created_at|prettyDate}}</span></dd>
+
+                  <div ng-if="crawljobsIndex[focusedJobId].started_at">
+                    <dt>Started harvesting</dt>
+                    <dd><span tooltip="{{crawljobsIndex[focusedJobId].started_at|date}}">{{crawljobsIndex[focusedJobId].started_at|prettyDate}}</span></dd>
+                  </div>
+
+                  <div ng-if="crawljobsIndex[focusedJobId].crawled_at">
+                    <dt>Finished harvesting</dt>
+                    <dd><span tooltip="{{crawljobsIndex[focusedJobId].crawled_at|date}}">{{crawljobsIndex[focusedJobId].crawled_at|prettyDate}}</span></dd>
+                  </div>
+
+                  <div ng-if="crawljobsIndex[focusedJobId].finished_at">
+                    <dt>Finished indexing</dt>
+                    <dd><span tooltip="{{crawljobsIndex[focusedJobId].finished_at|date}}">{{crawljobsIndex[focusedJobId].finished_at|prettyDate}}</span></dd>
+
+                    <dt>Total duration</dt>
+                    <dd>{{(crawljobsIndex[focusedJobId].finished_at - crawljobsIndex[focusedJobId].created_at)|duration}}</dd>
+                  </div>
+
+                </dl>
+
+                <h3 style="margin-bottom:0px"><span hyphe-glossary="START PAGES"/></h3>
+                <dl ng-if="crawljobsIndex[focusedJobId].crawl_arguments.start_urls.length" class="key-value-pairs">
+                  <dd ng-repeat="url in crawljobsIndex[focusedJobId].crawl_arguments.start_urls">
+                    <a href="{{url}}" target="_blank" title="Open in a new tab">
+                      <md-icon>link</md-icon>
+                    </a>{{url}}
+                  </dd>
+                </dl>
+                <dl ng-if="!crawljobsIndex[focusedJobId].crawl_arguments.start_urls.length" class="key-value-pairs">
+                  <dd>None</dd>
+                </dl>
+
+                <h3 style="margin-bottom:0px">DETAILED SETTINGS</h3>
+                <dl class="key-value-pairs">
+
+                  <dt>User Agent</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.user_agent}}</dd>
+
+                  <dt>Cookie used</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.cookies || "None"}}</dd>
+
+                  <dt>Additional Settings</dt>
+                  <dd>{{crawljobsIndex[focusedJobId].crawl_arguments.setting}}</dd>
+
+                  <dt>Follow Prefixes</dt>
+                  <div ng-if="crawljobsIndex[focusedJobId].crawl_arguments.follow_prefixes.length">
+                    <dd ng-repeat="lru in crawljobsIndex[focusedJobId].crawl_arguments.follow_prefixes">
+                      {{lru}}
+                    </dd>
+                  </div>
+                  <div ng-if="!crawljobsIndex[focusedJobId].crawl_arguments.follow_prefixes.length">
+                    <dd>
+                      None
+                    </dd>
+                  </div>
+
+                  <dt>No-Follow Prefixes</dt>
+                  <div ng-if="crawljobsIndex[focusedJobId].crawl_arguments.nofollow_prefixes.length">
+                    <dd ng-repeat="lru in crawljobsIndex[focusedJobId].crawl_arguments.nofollow_prefixes">
+                      {{lru}}
+                    </dd>
+                  </div>
+                  <div ng-if="!crawljobsIndex[focusedJobId].crawl_arguments.nofollow_prefixes.length">
+                    <dd>
+                      None
+                    </dd>
+                  </div>
+
+                  <dt>Discover Prefixes</dt>
+                  <dd ng-repeat="url in crawljobsIndex[focusedJobId].crawl_arguments.discover_prefixes">
+                    {{url}}
+                  </dd>
+                  
+                </dl>
+              </md-content>
+            </md-tab>
+
+          </md-tabs>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,385 @@
+<div layout="column" layout-fill>
+  <div class="topbar-height" ng-include="'partials/topbar.html'">
+  </div>
+  <div flex>
+    <div layout="row" layout-fill>
+      <div class="sidebar-width" ng-include="'partials/sidebar.html'"></div>
+      <div
+        flex
+        md-colors="{background: 'default-background-50'}"
+        style="overflow-y: auto;"
+      >
+        
+        <!-- Content -->
+        <div layout-fill layout="column">
+          <div class="page-header">
+            <h1>
+              WEB ENTITIES
+              <span
+                ng-if="dynamicWebentities && dynamicWebentities.numItems > 0 && counts.in"
+                md-colors="{'color':'default-primary'}"
+                style="font-size: 0.8em"
+              >
+                {{dynamicWebentities.numItems|number}}&nbsp;/&nbsp;{{(counts.in + counts.out + counts.discovered + counts.undefined)|number}}
+              </span>
+            </h1>
+          </div>
+
+          <div layout="row" flex>
+            <div layout="column" flex="70">
+              
+              <!-- Filtering -->
+              <div layout="column">
+                <div
+                  style="padding: 8px; margin: 8px"
+                  layout="column"
+                  md-colors="{'background':'default-background-200'}"
+                >
+
+                  <!-- Status selector -->
+                  <hyphe-status-box
+                    statuses="statuses"
+                    counts="counts"
+                    change="touchSettings()"
+                    disabled="dynamicWebentities.loading"
+                  ></hyphe-status-box>
+
+                  <div layout="row">
+
+                    <!-- Search -->
+                    <md-input-container flex style="margin-bottom: 0px">
+                      <label>Search</label>
+                      <md-icon>search</md-icon>
+                      <input
+                        focus-me="{{true}}"
+                        ng-model="query"
+                        ng-change="touchSettings()"
+                        ng-press-enter="applySettings()"
+                        ng-disabled="dynamicWebentities.loading"
+                      >
+                    </md-input-container>
+                    <div layout="row" layout-align="center center">
+                      <!-- Validation -->
+                      <md-button
+                        class="md-raised md-primary"
+                        ng-click="applySettings()"
+                        ng-disabled="!settingsChanged"
+                      >
+                        APPLY CHANGES
+                      </md-button>
+                      <md-button
+                        ng-click="revertSettings()"
+                        ng-disabled="!settingsChanged"
+                      >
+                        CANCEL
+                      </md-button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Infinite list -->
+              <div flex style="padding: 0px 8px 0px 8px">
+
+                <!-- Loading -->
+                <div
+                  layout-fill
+                  ng-if="!dynamicWebentities || (dynamicWebentities.numItems==0 && dynamicWebentities.loading)"
+                  layout="column"
+                  layout-align="center center"
+                >
+                  <spinner text="''"></spinner>
+                </div>
+
+                <!-- Loaded but no results -->
+                <div
+                  layout-fill
+                  ng-if="dynamicWebentities && dynamicWebentities.numItems==0 && !dynamicWebentities.loading && dynamicWebentities.querySettings.field_kw[0][1] != ''"
+                  md-colors="{'background': 'default-background-100'}"
+                  layout="column"
+                  layout-align="center center"
+                >
+                  NO RESULTS
+                </div>
+                
+                <!-- Loaded but no results EASTER EGG -->
+                <div
+                  layout-fill
+                  ng-if="dynamicWebentities && dynamicWebentities.numItems==0 && !dynamicWebentities.loading && dynamicWebentities.querySettings.field_kw[0][1] == ''"
+                  md-colors="{'background': 'default-background-100'}"
+                  layout="column"
+                  layout-align="center center"
+                >
+                  <h3 style="padding: 8px">
+                    You chose to display nothing.
+                    <br>
+                    Enjoy some user mockery! :&nbsp;)
+                  </h3>
+                  <img ng-src="{{randomEasterEgg}}">
+                </div>
+                
+                <!-- Loaded with results -->
+                <div
+                  layout-fill
+                  layout="column"
+                  ng-if="dynamicWebentities && dynamicWebentities.numItems > 0"
+                >
+                  <md-subheader
+                    class="follow-md-virtual-repeat-width"
+                  >
+                    <div layout="row" style="padding-right: 46px;">
+                      <div style="padding: 0px 22px 0px 3px; height: 20px;">
+                        <md-checkbox ng-checked="allChecked" ng-click="toggleCheckAll()" ng-disabled="allCheckedDisable" md-indeterminate="allCheckedIndeterminate" aria-label="Select all entities listed"></md-checkbox>
+                      </div>
+                      <div
+                        flex
+                        class="pointable"
+                        md-colors="{'color': (sort == 'name') ? ('default-accent') : ('default-primary')}"
+                        ng-click="toggleSort('name')"
+                      >
+                        NAME
+                        <md-icon class="welist-icon md-primary" style="opacity: 0.2" ng-if="sort != 'name'">remove</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'name' && sortAsc">arrow_downward</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'name' && !sortAsc">arrow_upward</md-icon>
+                      </div>
+                      <div
+                        class="welist-col-status pointable"
+                        md-colors="{'color': (sort == 'status') ? ('default-accent') : ('default-primary')}"
+                        ng-click="toggleSort('status')"
+                      >
+                        ST
+                        <md-tooltip md-direction="top">Status</md-tooltip>
+                        <md-icon class="welist-icon md-primary" style="opacity: 0.2" ng-if="sort != 'status'">remove</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'status' && sortAsc">arrow_downward</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'status' && !sortAsc">arrow_upward</md-icon>
+                      </div>
+                      <div
+                        class="welist-col-last-crawled pointable"
+                        md-colors="{'color': (sort == 'crawled') ? ('default-accent') : ('default-primary')}"
+                        ng-click="toggleSort('crawled')"
+                        hide show-gt-sm
+                      >
+                        C
+                        <md-tooltip md-direction="top">Crawled</md-tooltip>
+                        <md-icon class="welist-icon md-primary" style="opacity: 0.2" ng-if="sort != 'crawled'">remove</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'crawled' && sortAsc">arrow_downward</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'crawled' && !sortAsc">arrow_upward</md-icon>
+                      </div>
+                      <div
+                        class="welist-col-number-header pointable"
+                        md-colors="{'color': (sort == 'pages_total') ? ('default-accent') : ('default-primary')}"
+                        ng-click="toggleSort('pages_total')"
+                        hide show-gt-sm
+                      >
+                        PGS
+                        <md-tooltip md-direction="top">Total known pages (crawled and/or discovered)</md-tooltip>
+                        <md-icon class="welist-icon md-primary" style="opacity: 0.2" ng-if="sort != 'pages_total'">remove</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'pages_total' && sortAsc">arrow_downward</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'pages_total' && !sortAsc">arrow_upward</md-icon>
+                      </div>
+                      <div
+                        class="welist-col-number-header pointable"
+                        ng-click="toggleSort('indegree')"
+                        md-colors="{'color': (sort == 'indegree') ? ('default-accent') : ('default-primary')}"
+                      >
+                        CITED
+                        <md-tooltip md-direction="top">Number of other web entities citing it in the corpus</md-tooltip>
+                        <md-icon class="welist-icon md-primary" style="opacity: 0.2" ng-if="sort != 'indegree'">remove</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'indegree' && sortAsc">arrow_downward</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'indegree' && !sortAsc">arrow_upward</md-icon>
+                      </div>
+                      <div
+                        class="welist-col-last-modif pointable"
+                        ng-click="toggleSort('last_modification_date')"
+                        md-colors="{'color': (sort == 'last_modification_date') ? ('default-accent') : ('default-primary')}"
+                        hide show-gt-md
+                      >
+                        LAST MOD
+                        <md-tooltip md-direction="top">Last time the web entity was modified</md-tooltip>
+                        <md-icon class="welist-icon md-primary" style="opacity: 0.2" ng-if="sort != 'last_modification_date'">remove</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'last_modification_date' && sortAsc">arrow_downward</md-icon>
+                        <md-icon class="welist-icon md-accent" ng-if="sort == 'last_modification_date' && !sortAsc">arrow_upward</md-icon>
+                      </div>
+                    </div>
+                  </md-subheader>
+                  <div flex>
+                    <md-virtual-repeat-container layout-fill>
+                      <md-list
+                        md-colors="{
+                          'background': 'default-background-100'
+                        }"
+                      >
+                        <md-list-item
+                          md-virtual-repeat="obj in dynamicWebentities"
+                          md-item-size="48"
+                          md-on-demand
+                          md-colors="{
+                            'background': obj.selected ? 'default-accent-100' : 'default-background-100'
+                          }"
+                          flex
+                        >
+                          <md-checkbox ng-model="obj.selected" ng-disabled="!obj.webentity"></md-checkbox>
+                          <p flex layout="row">
+                            <a
+                              ng-show="obj.webentity.homepage"
+                              href="{{obj.webentity.homepage}}"
+                              target="_blank"
+                              ng-click="$event.stopPropagation();"
+                              style="margin-right:2px"
+                            >
+                              <md-tooltip md-direction="left">{{obj.webentity.homepage}}</md-tooltip>
+                              <md-icon>link</md-icon>
+                            </a>
+                            <span md-truncate flex>
+                              {{obj.webentity.name || 'Loading'}}
+                            </span>
+                          </p>
+                          <div
+                            class="welist-col-status"
+                            md-truncate
+                            ng-class="{
+                              'webentity-color-in':obj.webentity.status == 'IN',
+                              'webentity-color-undecided':obj.webentity.status == 'UNDECIDED',
+                              'webentity-color-out':obj.webentity.status == 'OUT',
+                              'webentity-color-discovered':obj.webentity.status == 'DISCOVERED'
+                            }"
+                          >
+                            <md-tooltip md-direction="right">Web entity status: {{obj.webentity.status}}</md-tooltip>
+                            {{obj.webentity.status}}
+                          </div>
+                          <div
+                            class="welist-col-last-crawled"
+                            hide show-gt-sm
+                          >
+                            <div ng-if="obj.webentity.crawled">
+                              <md-tooltip md-direction="left">Crawled</md-tooltip>
+                              <md-icon style="opacity: 0.9">opacity</md-icon>
+                            </div>
+                            <div ng-if="!obj.webentity.crawled">
+                              <md-tooltip md-direction="left">Not crawled</md-tooltip>
+                              <md-icon style="opacity: 0.2">opacity</md-icon>
+                            </div>
+                          </div>
+                          <div
+                            class="welist-col-number"
+                            hide show-gt-sm
+                          >
+                            <md-tooltip md-direction="right">{{obj.webentity.pages_total|number}} page{{obj.webentity.pages_total|plural}} of the web entity known (including {{obj.webentity.pages_crawled|number}} crawled)</span></md-tooltip>
+                            {{obj.webentity.pages_total|number}}
+                          </div>
+                          <div
+                            class="welist-col-number"
+                          >
+                            <md-tooltip md-direction="right">Is cited by {{obj.webentity.indegree|number}} other web entit{{obj.webentity.indegree|y_ies}} in the corpus</md-tooltip>
+                            {{obj.webentity.indegree|number}}
+                          </div>
+                          <div
+                            class="welist-col-last-modif"
+                            hide show-gt-md
+                          >
+                            <span md-truncate>
+                              <md-tooltip md-direction="right">Last modified {{obj.webentity.last_modification_date|date}}</md-tooltip>
+                              {{obj.webentity.last_modification_date|prettyDate}}
+                            </span>
+                          </div>
+                          <webentity-link class="md-secondary" corpus-id="corpusId" webentity-id="obj.webentity.id"></webentity-link>
+                        </md-list-item>
+                      </md-list>
+                    </md-virtual-repeat-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div layout="column" flex="30" style="padding: 8px 0px 0px 8px" ng-if="checkedList.length > 0">
+
+              <!-- Title -->
+              <div layout="row" md-colors="{'background':'default-accent'}">
+                <div style="padding: 8px" flex>
+                  SELECTION: {{checkedList.length}} WEB ENTIT{{checkedList.length | y_ies | uppercase}}
+                </div>
+                <div>
+                  <md-button class="md-icon-button" ng-click="uncheckAll()" style="padding: 8px">
+                    <md-icon md-colors="{'color':'default-accent-50'}">close</md-icon>
+                  </md-button>
+                </div>
+              </div>
+
+              <!-- List preview -->
+              <div class="selected-webentities-container">
+                <md-list 
+                  layout-fill
+                  md-colors="{
+                    'background': 'default-background-100'
+                  }"
+                >
+                  <md-list-item ng-repeat="id in checkedList" md-colors="{'background': 'default-background-100'}">
+                    <span md-truncate>{{checkedIndex[id].name}}</span>
+                    <md-button class="md-icon-button md-secondary" ng-click="uncheck(id)">
+                      <md-icon>close</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </md-list>
+              </div>
+
+              <div layout="column" md-colors="{'background':'default-background-200'}" style="padding: 8px">
+                
+                <div layout="row">
+                  <md-input-container flex>
+                    <label>Status</label>
+                    <md-select ng-model="$parent.selected_setStatus">
+                      <md-option value=""><em>None</em></md-option>
+                      <md-option value="IN">IN</md-option>
+                      <md-option value="UNDECIDED">UNDECIDED</md-option>
+                      <md-option value="OUT">OUT</md-option>
+                    </md-select>
+                  </md-input-container>
+                  <md-button
+                    class="md-primary"
+                    ng-disabled="selected_setStatus == '' || loading"
+                    ng-click="doSetStatus()"
+                  >SET STATUS</md-button>
+                </div>
+
+                <div layout="row">
+                  <md-button
+                    class="md-raised"
+                    ng-click="doCrawl()"
+                    flex
+                  >
+                    <md-icon>opacity</md-icon>
+                    CRAWL
+                  </md-button>
+                </div>
+                
+                <div layout="row">
+                  <md-input-container flex>
+                    <label>Merge into...</label>
+                    <md-select ng-model="$parent.selected_mergeTarget" ng-disabled="loading || checkedList.length < 2">
+                      <md-option value=""><em>None</em></md-option>
+                      <md-option
+                        ng-repeat="id in checkedList"
+                        value="{{id}}"
+                      >{{checkedIndex[id].name}}</md-option>
+                    </md-select>
+                  </md-input-container>
+                  <md-button
+                    class="md-primary"
+                    ng-disabled="selected_mergeTarget == '' || loading || checkedList.length < 2"
+                    ng-click="doMerge()"
+                  >MERGE</md-button>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
