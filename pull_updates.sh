@@ -48,7 +48,7 @@ git subtree pull --prefix memespector-gui/source https://github.com/jason-chao/m
 echo ""
 
 echo "Pull updates for bitchute-scraper"
-git subtree pull --prefix bitchute-scraper/source https://github.com/bumatic/bitchute-scraper.git master
+git subtree pull --prefix bitchute-scraper/source https://github.com/bumatic/bitchute-scraper.git main
 echo ""
 
 # echo "Pull updates for "
