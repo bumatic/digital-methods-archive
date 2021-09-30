@@ -1,11 +1,23 @@
-# Python Bitchute Scraper
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5539459.svg)](https://doi.org/10.5281/zenodo.5539459)
 
-This repository contains a simple scaper for the bitcute video plattform and is WIP.
+# Bitchute Scraper
 
+Python scraper for the Bitchute video platform. It allows you to query for videos and to retrieve platform recommendations such as trending videos, popular videos or trending tags. It makes use of Selenium for retrieving data.
 
 ## Installation
 
-For using the scraper you can download, clone or fork the repsoitory and put the ```bitchute``` folder in the working directory of your python script.
+bitchute-scraper is available on PyPi:
+
+```Shell
+$ pip3 install bitchute-scraper
+```
+
+Alternatively you can download the repository and install the package by running the setup.py install routine. Make sure to install the requirements as well:
+
+```Shell
+$ pip3 install -r requirements.txt
+$ python3 setup.py install
+```
 
 ## Usage
 
