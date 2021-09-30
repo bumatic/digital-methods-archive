@@ -51,17 +51,17 @@ echo "Pull updates for bitchute-scraper"
 git subtree pull --prefix bitchute-scraper/source https://github.com/bumatic/bitchute-scraper.git main
 echo ""
 
-# echo "Pull updates for rawgraphs-core"
+echo "Pull updates for rawgraphs-core"
 git subtree pull --prefix rawgraphs/rawgraphs-core/source https://github.com/rawgraphs/rawgraphs-core.git master
-# echo ""
+echo ""
 
-# echo "Pull updates for rawgraphs-app"
+echo "Pull updates for rawgraphs-app"
 git subtree pull --prefix rawgraphs/rawgraphs-app/source https://github.com/rawgraphs/rawgraphs-app.git master
-# echo ""
+echo ""
 
-# echo "Pull updates for rawgraphs-charts"
+echo "Pull updates for rawgraphs-charts"
 git subtree pull --prefix rawgraphs/rawgraphs-charts/source https://github.com/rawgraphs/rawgraphs-charts.git master
-# echo ""
+echo ""
 
 # echo "Pull updates for "
 # echo ""
